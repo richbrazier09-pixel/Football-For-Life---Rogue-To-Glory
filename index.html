@@ -5,11 +5,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Football For Life : Rogue To Glory</title>
+
+<link rel="stylesheet"
+ href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+ integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+ crossorigin="">
+
 <style>
 :root {
-  --bg:#09130e; --panel:#13231a; --panel2:#1c3024;
-  --line:#354b3b; --green:#b9eb78; --gold:#e9c66f;
-  --white:#f2f5ed; --muted:#a4b4a7;
+ --bg:#09130e;--panel:#13231a;--panel2:#1c3024;
+ --line:#354b3b;--green:#b9eb78;--gold:#e9c66f;
+ --white:#f2f5ed;--muted:#a4b4a7;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif}
@@ -23,9 +29,11 @@ header{padding:18px 5%;background:#0d1b13;border-bottom:1px solid var(--line);di
 header small{color:var(--muted);letter-spacing:2px}
 main{max-width:1200px;margin:auto;padding:24px 18px 60px}
 h1{font-size:clamp(30px,5vw,48px);line-height:1.08}
-h2{font-size:24px}h3{font-size:17px}
+h2{font-size:24px}
+h3{font-size:17px}
 p{color:var(--muted);line-height:1.5}
-.screen{display:none}.screen.active{display:block}
+.screen{display:none}
+.screen.active{display:block}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:12px}
 .perk{background:var(--panel2);color:white;border:1px solid var(--line);padding:17px;text-align:left;min-height:125px}
@@ -35,22 +43,54 @@ p{color:var(--muted);line-height:1.5}
 .nav button{background:#1b3024;color:white;border:1px solid var(--line)}
 .nav button.active{background:var(--green);color:#102016}
 .pill{display:inline-block;padding:5px 9px;background:#263d2e;color:var(--green);border-radius:30px;font-size:11px;font-weight:bold}
-.muted{color:var(--muted)}.small{font-size:12px}
+.muted{color:var(--muted)}
+.small{font-size:12px}
 .statrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 .stat{background:#1b3024;padding:12px 16px;border-radius:9px;min-width:105px}
 .stat b{display:block;color:var(--green);font-size:22px}
 .stat span{font-size:11px;color:var(--muted)}
 .section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-.map-shell{background:#12241b;border:1px solid var(--line);border-radius:15px;padding:8px;overflow:hidden}
-#regionalMap{width:100%;height:auto;display:block}
-.map-label{font-size:12px;fill:#f5f5eb;font-weight:bold;paint-order:stroke;stroke:#14251c;stroke-width:3px;stroke-linejoin:round}
-.map-pin{cursor:pointer}
-.map-pin .marker{fill:#dce9d7;stroke:#1a2a20;stroke-width:3}
-.map-pin.home .marker{fill:var(--gold);stroke:#fff}
-.map-pin:hover .marker{stroke:var(--green);stroke-width:5}
-.map-legend{display:flex;gap:18px;flex-wrap:wrap;padding:12px;color:var(--muted);font-size:12px}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#dce9d7;margin-right:5px}
-.dot.home{background:var(--gold)}
+
+/* REAL INTERACTIVE MAP */
+.map-shell{
+ background:#13231a;border:1px solid var(--line);
+ border-radius:15px;padding:8px;overflow:hidden
+}
+#regionalMap{
+ width:100%;height:650px;border-radius:10px;
+ background:#dce5df;z-index:1
+}
+.map-legend{
+ display:flex;gap:18px;flex-wrap:wrap;padding:12px;
+ color:var(--muted);font-size:12px
+}
+.map-dot{
+ display:inline-block;width:10px;height:10px;
+ border-radius:50%;background:#dce9d7;margin-right:5px
+}
+.map-dot.home{background:var(--gold)}
+.stadium-marker{
+ width:32px;height:32px;border-radius:50%;
+ background:#e5eddf;border:3px solid #15271c;
+ display:flex;align-items:center;justify-content:center;
+ color:#142016;font-size:15px;font-weight:bold;
+ box-shadow:0 2px 8px #0008
+}
+.stadium-marker.home{
+ background:var(--gold);border:3px solid #fff;
+ width:38px;height:38px;font-size:17px
+}
+.leaflet-popup-content-wrapper{
+ background:#13231a;color:#f2f5ed;
+ border:1px solid #526e53;border-radius:10px
+}
+.leaflet-popup-tip{background:#13231a}
+.leaflet-popup-content{margin:12px 15px;font-weight:bold}
+.leaflet-container a.leaflet-popup-close-button{color:white}
+.map-popup-title{font-size:15px;margin-bottom:4px}
+.map-popup-sub{font-size:12px;color:#b9c8b8;font-weight:normal}
+.leaflet-control-attribution{font-size:10px}
+
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{text-align:left;padding:10px 7px;border-bottom:1px solid var(--line)}
 th{font-size:10px;color:var(--muted);text-transform:uppercase}
@@ -83,6 +123,7 @@ tr.highlight{background:#263d2e}
 .empty{border:1px dashed var(--line);border-radius:9px;padding:18px;text-align:center;color:var(--muted)}
 @media(max-width:600px){
  header{align-items:flex-start;flex-direction:column}
+ #regionalMap{height:540px}
  .fixture{grid-template-columns:35px 1fr}
  .fixture .venue{grid-column:2;text-align:left}
  .slot{width:55px}
@@ -92,13 +133,14 @@ tr.highlight{background:#263d2e}
 }
 </style>
 </head>
+
 <body>
 <header>
  <div class="brand">FOOTBALL <span>FOR LIFE</span></div>
  <small>ROGUE TO GLORY</small>
 </header>
-<main>
 
+<main>
 <section id="start" class="screen active">
  <div class="panel">
   <span class="pill">YOUR CLUB. YOUR JOURNEY.</span>
@@ -121,6 +163,7 @@ tr.highlight{background:#263d2e}
   <div class="stat"><b>14</b><span>Squad players</span></div>
   <div class="stat"><b id="perkStat">—</b><span>Selected perk</span></div>
  </div>
+
  <nav class="nav">
   <button class="active" onclick="showScreen('map',this)">Map</button>
   <button onclick="showScreen('training',this)">Training</button>
@@ -130,41 +173,30 @@ tr.highlight{background:#263d2e}
  </nav>
 
  <section id="map" class="screen active">
-  <div class="section-title"><h2>Club Map</h2><span class="pill">NORTH WEST & MIDLANDS</span></div>
-  <p>Sixteen clubs across the regional league. Select a stadium to view its club.</p>
+  <div class="section-title">
+   <h2>Club Map</h2><span class="pill">REGIONAL LEAGUE</span>
+  </div>
+  <p>
+   Explore the real geography of the league. All 16 stadiums are
+   marked in their actual towns and cities. Zoom in to see the
+   surrounding roads and places.
+  </p>
   <div class="map-shell">
-   <svg id="regionalMap" viewBox="0 0 760 720" role="img" aria-label="Stylised regional map of North West England and nearby Midlands">
-    <defs>
-     <linearGradient id="landFill" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#526d50"/>
-      <stop offset="1" stop-color="#314d3d"/>
-     </linearGradient>
-     <pattern id="hills" width="80" height="65" patternUnits="userSpaceOnUse">
-      <path d="M-10 45 Q15 15 40 43 T90 40" fill="none" stroke="#c1d0a4" stroke-opacity=".12" stroke-width="2"/>
-      <path d="M-10 60 Q15 30 40 58 T90 55" fill="none" stroke="#c1d0a4" stroke-opacity=".08"/>
-     </pattern>
-    </defs>
-    <rect width="760" height="720" fill="#14251e"/>
-    <path d="M130 0 L760 0 L760 720 L550 720 L510 665 L450 625 L400 590 L370 550 L340 515 L310 485 L290 440 L270 400 L245 360 L220 330 L205 285 L175 240 L150 200 L125 150 L100 100Z" fill="url(#landFill)" stroke="#83987c" stroke-width="3"/>
-    <path d="M130 0 L760 0 L760 720 L550 720 L510 665 L450 625 L400 590 L370 550 L340 515 L310 485 L290 440 L270 400 L245 360 L220 330 L205 285 L175 240 L150 200 L125 150 L100 100Z" fill="url(#hills)"/>
-    <path d="M200 0 Q245 130 230 230 T290 420 M370 0 Q390 150 365 280 T430 520 M540 0 Q510 150 545 290 T520 540 M250 330 Q390 300 530 340 M300 490 Q430 460 620 500" fill="none" stroke="#d7ddc5" stroke-opacity=".24" stroke-width="1.5" stroke-dasharray="5 6"/>
-    <path d="M160 280 Q220 300 255 350 T335 410 T430 440 T540 490" fill="none" stroke="#91b9b7" stroke-opacity=".6" stroke-width="4"/>
-    <path d="M240 520 Q300 500 350 535 T460 570" fill="none" stroke="#91b9b7" stroke-opacity=".4" stroke-width="3"/>
-    <path d="M175 90 Q260 180 310 310 T430 480 T610 620 M180 500 Q300 400 390 300 T620 150 M270 100 Q350 220 430 300 T650 420" fill="none" stroke="#e2d5a9" stroke-opacity=".35" stroke-width="3"/>
-    <text x="430" y="60" fill="#dbe5d5" opacity=".7" font-size="17" letter-spacing="3">NORTH WEST</text>
-    <text x="560" y="680" fill="#dbe5d5" opacity=".55" font-size="13" letter-spacing="2">MIDLANDS</text>
-    <text x="90" y="310" fill="#a6c3c4" opacity=".65" font-size="13">IRISH SEA</text>
-    <g id="mapPins"></g>
-   </svg>
+   <div id="regionalMap" aria-label="Interactive map of the 16 league clubs"></div>
    <div class="map-legend">
-    <span><i class="dot home"></i>Football For Life</span>
-    <span><i class="dot"></i>Opponent stadium</span>
+    <span><i class="map-dot home"></i>Football For Life</span>
+    <span><i class="map-dot"></i>Opponent stadium</span>
+    <span>Scroll or use + / − to zoom</span>
    </div>
   </div>
   <div class="panel" style="margin-top:14px">
    <h3 id="mapClubName">Football For Life</h3>
    <p id="mapClubDetail">Ellesmere Port · C of E College</p>
   </div>
+  <p class="small">
+   Map data and tiles © OpenStreetMap contributors.
+   Map loads from the internet, so an internet connection is required.
+  </p>
  </section>
 
  <section id="training" class="screen">
@@ -259,24 +291,28 @@ tr.highlight{background:#263d2e}
 </div>
 </main>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+ crossorigin=""></script>
+
 <script>
 const CLUBS = [
- {name:"Football For Life",place:"Ellesmere Port",x:270,y:425,home:true},
- {name:"Chester",place:"Chester",x:250,y:465},
- {name:"Warrington",place:"Warrington",x:370,y:330},
- {name:"Wrexham",place:"Wrexham",x:220,y:520},
- {name:"Wirral",place:"Wirral",x:205,y:405},
- {name:"Stoke",place:"Stoke",x:510,y:590},
- {name:"Salford",place:"Salford",x:410,y:255},
- {name:"St Helens",place:"St Helens",x:385,y:310},
- {name:"Blackpool",place:"Blackpool",x:205,y:155},
- {name:"Bolton",place:"Bolton",x:425,y:215},
- {name:"Blackburn",place:"Blackburn",x:440,y:155},
- {name:"Crewe",place:"Crewe",x:365,y:490},
- {name:"Rochdale",place:"Rochdale",x:485,y:250},
- {name:"Sandwell",place:"Sandwell",x:575,y:635},
- {name:"Redditch",place:"Redditch",x:640,y:680},
- {name:"West Brom",place:"West Brom",x:575,y:600}
+ {name:"Football For Life",place:"Ellesmere Port",lat:53.2790,lng:-2.8970,home:true,ground:"C of E College"},
+ {name:"Chester",place:"Chester",lat:53.1930,lng:-2.8930},
+ {name:"Warrington",place:"Warrington",lat:53.3900,lng:-2.5970},
+ {name:"Wrexham",place:"Wrexham",lat:53.0460,lng:-2.9930},
+ {name:"Wirral",place:"Birkenhead, Wirral",lat:53.3930,lng:-3.0140},
+ {name:"Stoke",place:"Stoke-on-Trent",lat:53.0020,lng:-2.1790},
+ {name:"Salford",place:"Salford",lat:53.4870,lng:-2.2900},
+ {name:"St Helens",place:"St Helens",lat:53.4540,lng:-2.7370},
+ {name:"Blackpool",place:"Blackpool",lat:53.8170,lng:-3.0350},
+ {name:"Bolton",place:"Bolton",lat:53.5760,lng:-2.4280},
+ {name:"Blackburn",place:"Blackburn",lat:53.7480,lng:-2.4820},
+ {name:"Crewe",place:"Crewe",lat:53.0990,lng:-2.4410},
+ {name:"Rochdale",place:"Rochdale",lat:53.6090,lng:-2.1560},
+ {name:"Sandwell",place:"Sandwell",lat:52.5000,lng:-2.0000},
+ {name:"Redditch",place:"Redditch",lat:52.3060,lng:-1.9450},
+ {name:"West Brom",place:"West Bromwich",lat:52.5190,lng:-1.9950}
 ];
 
 const PERKS = [
@@ -287,9 +323,6 @@ const PERKS = [
  {name:"Lucky Scout",description:"First card rewards are higher rarity."}
 ];
 
-/* Formation lines are listed from attack down towards defence.
-   Goalkeeper is always a separate player at the bottom.
-   All formation numbers exclude the goalkeeper. */
 const FORMATIONS = {
  "4-4-2":{
   lines:[["ST","ST"],["LM","CM","CM","RM"],["LB","CB","CB","RB"]],
@@ -318,6 +351,9 @@ let state = {
  fixtures:[],cupRounds:[],tokens:[],appliedTokens:[],
  played:0,record:{w:0,d:0,l:0},table:{}
 };
+
+let regionalMap=null;
+let mapMarkers=[];
 
 const FIRST_NAMES=["Alex","Jordan","Sam","Charlie","Jamie","Taylor","Morgan","Riley","Casey","Cameron","Avery","Dylan","Finley","Harvey","Reece","Lewis","Noah","Max"];
 const LAST_NAMES=["Williams","Davies","Jones","Taylor","Brown","Wilson","Evans","Thomas","Roberts","Walker","Hughes","Clarke","Wood","Green","Hall","Baker"];
@@ -367,8 +403,6 @@ function createSquad(){
  return squad;
 }
 
-/* Generate a random order of 15 opponents, then reverse venues
-   for those exact opponents in the return half. */
 function createFixtures(){
  const opponents=shuffle(CLUBS.filter(c=>!c.home));
  const firstLeg=opponents.map((club,i)=>({
@@ -424,34 +458,63 @@ function showScreen(id,button){
  document.getElementById(id).classList.add("active");
  document.querySelectorAll(".nav button").forEach(el=>el.classList.remove("active"));
  if(button)button.classList.add("active");
+ if(id==="map")initMap();
  if(id==="tactics")renderTactics();
  if(id==="fixtures")renderFixtures();
  if(id==="table")renderTable();
 }
+
+/* Create the map once, then resize it when the map screen is opened.
+   Fit bounds includes all club markers and a comfortable margin. */
+function initMap(){
+ if(!window.L)return;
+ if(!regionalMap){
+  regionalMap=L.map("regionalMap",{
+   scrollWheelZoom:true,
+   zoomControl:true,
+   preferCanvas:true
+  });
+
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+   maxZoom:19,
+   attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(regionalMap);
+
+  const bounds=[];
+  CLUBS.forEach(club=>{
+   const icon=L.divIcon({
+    className:"",
+    html:`<div class="stadium-marker ${club.home?"home":""}">▥</div>`,
+    iconSize:club.home?[38,38]:[32,32],
+    iconAnchor:club.home?[19,19]:[16,16],
+    popupAnchor:[0,-17]
+   });
+
+   const marker=L.marker([club.lat,club.lng],{icon}).addTo(regionalMap);
+   marker.bindPopup(`
+    <div class="map-popup-title">${safe(club.name)}</div>
+    <div class="map-popup-sub">${safe(club.place)}</div>
+    <div class="map-popup-sub">${club.home?"Home ground: C of E College":"League opponent"}</div>
+   `);
+   marker.on("click",()=>selectMapClub(CLUBS.indexOf(club)));
+   mapMarkers.push(marker);
+   bounds.push([club.lat,club.lng]);
+  });
+
+  regionalMap.fitBounds(bounds,{padding:[35,35],maxZoom:9});
+ }else{
+  setTimeout(()=>regionalMap.invalidateSize(),100);
+ }
+}
+
 function renderAll(){
- renderMap();
+ initMap();
  renderFixtures();
  renderTable();
  renderTactics();
  updateStats();
 }
 
-/* Map pins are positioned separately from the decorative regional
-   outline, so the club labels do not depend on the background art. */
-function renderMap(){
- document.getElementById("mapPins").innerHTML=CLUBS.map((club,i)=>{
-  const rightSide=club.x>590;
-  const labelX=rightSide?-14:14;
-  const anchor=rightSide?"end":"start";
-  return `<g class="map-pin ${club.home?"home":""}"
-    transform="translate(${club.x},${club.y})" onclick="selectMapClub(${i})">
-    <circle class="marker" r="${club.home?13:10}"/>
-    <path d="M-5 -4 L5 -4 L5 4 L-5 4Z" fill="#17291e" stroke="#17291e"/>
-    <path d="M-3 -2 L3 -2 M-3 0 L3 0 M-3 2 L3 2" stroke="#dce9d7" stroke-width="1"/>
-    <text class="map-label" x="${labelX}" y="-14" text-anchor="${anchor}">${safe(club.name)}</text>
-   </g>`;
- }).join("");
-}
 function selectMapClub(i){
  const club=CLUBS[i];
  document.getElementById("mapClubName").textContent=club.name;
@@ -507,14 +570,13 @@ function renderTable(){
    <td>${row.gf-row.ga}</td><td><b>${row.pts}</b></td>
   </tr>`).join("");
 }
+
 function updateStats(){
  document.getElementById("weekStat").textContent=Math.min(state.played+1,30);
  document.getElementById("recordStat").textContent=
   `${state.record.w}-${state.record.d}-${state.record.l}`;
 }
 
-/* Pitch positioning: first listed line is the forwards at the top.
-   Last listed line is the defence, immediately above the goalkeeper. */
 function lineCoordinates(count,lineIndex,totalLines){
  const y=12+(lineIndex/(totalLines-1||1))*66;
  const spread=count===1?0:Math.min(78,Math.max(38,count*18));
@@ -537,7 +599,6 @@ function renderTactics(){
  const formation=FORMATIONS[state.formation];
  document.getElementById("formationSelect").value=state.formation;
  document.getElementById("formationDescription").textContent=formation.description;
-
  const groups=getLineupGroups();
  let html="";
  groups.forEach((line,lineIndex)=>{
@@ -564,7 +625,6 @@ function renderTactics(){
     </div>`;
   });
  });
-
  const keeper=state.squad.find(p=>p.position==="GK");
  html+=`
   <div class="slot gk ${keeper.id===state.captain?"captain":""}"
@@ -575,10 +635,8 @@ function renderTactics(){
    </div>
    <div class="role">GK · GOALKEEPER</div>
   </div>`;
-
  document.getElementById("pitchPlayers").innerHTML=html;
- document.getElementById("playerCountPill").textContent=
-  state.lineup.length+" STARTING PLAYERS";
+ document.getElementById("playerCountPill").textContent=state.lineup.length+" STARTING PLAYERS";
  renderSquad();
  renderCaptain();
  renderTokens();
@@ -589,9 +647,6 @@ function changeFormation(value){
  renderTactics();
 }
 
-/* Selecting a player already in the XI swaps the two players.
-   Selecting a substitute replaces the current player and makes
-   the replaced player available as a substitute. */
 function replacePlayer(oldId,newId){
  oldId=Number(oldId);
  newId=Number(newId);
@@ -600,9 +655,7 @@ function replacePlayer(oldId,newId){
  const newPlayer=playerById(newId);
  if(!newPlayer||newPlayer.position==="GK")return;
  const newIndex=state.lineup.indexOf(newId);
- if(newIndex>=0){
-  state.lineup[newIndex]=oldId;
- }
+ if(newIndex>=0)state.lineup[newIndex]=oldId;
  state.lineup[oldIndex]=newId;
  renderTactics();
 }
@@ -618,7 +671,6 @@ function renderSquad(){
    <div class="small" style="margin-top:7px">${starting.has(player.id)?"STARTING XI":"SUBSTITUTE"}</div>
    ${player.tokens?.length?`<div class="small">${player.tokens.map(t=>safe(t.name)).join(", ")}</div>`:""}
   </div>`).join("");
-
  document.getElementById("subsList").innerHTML=
   state.squad.filter(p=>!starting.has(p.id)).map(player=>`
    <div class="player-card">
@@ -642,7 +694,6 @@ function setCaptain(id){
  renderTactics();
 }
 
-/* Bonus token inventory: prepared for the token system to be added later. */
 function renderTokens(){
  const inventory=document.getElementById("tokenInventory");
  const area=document.getElementById("tokenApplyArea");
@@ -675,11 +726,6 @@ function applySelectedToken(){
  state.appliedTokens.push({token,playerId:player.id});
  renderTactics();
 }
-
-/* Future reward code can add a token like this:
-   state.tokens.push({name:"Token name",description:"Token effect"});
-   renderTokens();
-*/
 
 renderPerks();
 </script>
