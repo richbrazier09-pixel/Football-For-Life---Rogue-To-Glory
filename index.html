@@ -4,921 +4,586 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Football For Life: Rogue To Glory</title>
+<title>Football For Life : Rogue To Glory</title>
 <style>
 :root {
-  --bg:#101713;
-  --panel:#18231d;
-  --panel2:#202d25;
-  --line:#34463a;
-  --green:#a5d66b;
-  --green2:#6d9d43;
-  --cream:#edf0e6;
-  --muted:#a1aea3;
-  --gold:#d6b76a;
-  --red:#bd716c;
+  --bg:#08120f;--panel:#12221c;--panel2:#192d24;--green:#b5ef69;
+  --muted:#9aafa2;--line:#30463a;--white:#f3f7f2;--gold:#f2c96d;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--cream);
-  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
-}
+body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif}
 button,select{font:inherit}
 button{cursor:pointer}
+header{display:flex;justify-content:space-between;align-items:center;padding:17px 5%;border-bottom:1px solid var(--line);background:#0b1913;gap:12px}
+.brand{font-weight:900;letter-spacing:1px;font-size:19px}
+.brand span{color:var(--green)}
+header small{color:var(--muted)}
+main{max-width:1200px;margin:auto;padding:24px 18px 60px}
+h1,h2,h3{margin-top:0}
+h1{font-size:clamp(27px,5vw,43px)}
+h2{font-size:23px}
+h3{font-size:17px}
+p{color:var(--muted);line-height:1.5}
+button,.button{background:var(--green);color:#102016;border:0;border-radius:9px;padding:11px 15px;font-weight:800}
+button.secondary{background:#263b30;color:var(--white);border:1px solid var(--line)}
 button:disabled{opacity:.4;cursor:not-allowed}
-#app{min-height:100vh}
-.hidden{display:none!important}
-.eyebrow{
-  color:var(--green);font-size:11px;font-weight:800;
-  letter-spacing:2px;text-transform:uppercase
-}
-h1,h2,h3,p{margin-top:0}
-h1{font-size:clamp(36px,7vw,72px);line-height:.98;letter-spacing:-3px}
-h2{font-size:27px;letter-spacing:-.7px}
-h3{font-size:16px}
+.screen{display:none}
+.screen.active{display:block}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:19px;margin-bottom:17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:13px}
+.perk{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left;color:var(--white);width:100%;min-height:115px}
+.perk.selected{border:2px solid var(--green);background:#203b2b}
+.perk strong{display:block;color:var(--green);margin-bottom:9px}
 .muted{color:var(--muted)}
 .small{font-size:12px}
-button:focus-visible,select:focus-visible{
-  outline:2px solid var(--green);outline-offset:3px
-}
-
-/* START MENU */
-.menu{
-  min-height:100vh;display:grid;grid-template-columns:1.1fr .9fr;
-  max-width:1500px;margin:auto;padding:48px;gap:50px;align-items:center
-}
-.brand{font-weight:900;letter-spacing:2px;font-size:13px}
-.brand span{color:var(--green)}
-.hero-copy{max-width:680px}
-.hero-copy h1{margin:25px 0}
-.hero-copy h1 em{font-style:normal;color:var(--green)}
-.hero-copy p{color:var(--muted);line-height:1.7;max-width:470px}
-.pitch-art{
-  margin-top:38px;max-width:520px;aspect-ratio:1.8;
-  border:1px solid #53674d;border-radius:14px;overflow:hidden;
-  position:relative;background:
-  linear-gradient(90deg,transparent 49.7%,#ffffff25 50%,transparent 50.3%),
-  repeating-linear-gradient(0deg,#284b35 0 45px,#31583c 45px 90px);
-}
-.pitch-art:before{
-  content:"";position:absolute;inset:12%;border:1px solid #ffffff55
-}
-.pitch-art:after{
-  content:"";position:absolute;width:25%;aspect-ratio:1;border:1px solid #ffffff55;
-  border-radius:50%;left:37.5%;top:calc(50% - 12.5%)
-}
-.pitch-box{position:absolute;left:32%;width:36%;height:18%;border:1px solid #ffffff55}
-.pitch-box.top{top:12%}.pitch-box.bottom{bottom:12%}
-.menu-panel{
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:18px;padding:28px;box-shadow:0 24px 70px #0005
-}
-.menu-panel h2{margin:8px 0}
-.perks{display:grid;gap:10px;margin:22px 0}
-.perk{
-  width:100%;text-align:left;background:#202c24;border:1px solid var(--line);
-  color:var(--cream);padding:15px;border-radius:11px;transition:.18s
-}
-.perk:hover{border-color:#829c6d;transform:translateY(-1px)}
-.perk.selected{border:1px solid var(--green);background:#293c2b;box-shadow:inset 3px 0 var(--green)}
-.perk-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
-.perk-name{font-weight:800}
-.perk-number{font-size:10px;color:var(--muted);letter-spacing:1px}
-.perk-desc{font-size:12px;color:var(--muted);line-height:1.5;margin-top:7px}
-.tick{color:var(--green);font-weight:900}
-.primary{
-  background:var(--green);color:#142016;border:0;border-radius:9px;
-  padding:14px 20px;font-weight:900;width:100%
-}
-.primary:hover{background:#b8e58a}
-.secondary{
-  background:transparent;color:var(--cream);border:1px solid var(--line);
-  border-radius:8px;padding:10px 14px
-}
-.secondary:hover{border-color:var(--green)}
-.menu-note{font-size:11px;color:var(--muted);line-height:1.6;margin-top:14px}
-
-/* MAIN APP */
-.topbar{
-  height:68px;border-bottom:1px solid var(--line);display:flex;
-  align-items:center;justify-content:space-between;padding:0 28px;
-  background:#131c16;position:sticky;top:0;z-index:10
-}
-.topbar .brand{font-size:12px}
-.run-label{font-size:12px;color:var(--muted)}
-.layout{display:grid;grid-template-columns:220px minmax(0,1fr);min-height:calc(100vh - 68px)}
-.sidebar{
-  border-right:1px solid var(--line);padding:22px 14px;background:#141d17
-}
-.nav-label{font-size:10px;color:var(--muted);letter-spacing:1.5px;margin:8px 10px 12px}
-.nav-btn{
-  display:flex;align-items:center;gap:12px;width:100%;text-align:left;
-  color:#bdc8bd;background:transparent;border:0;border-radius:8px;
-  padding:12px 11px;margin:3px 0;font-size:13px
-}
-.nav-btn:hover,.nav-btn.active{background:#26372a;color:var(--green)}
-.nav-icon{width:20px;text-align:center;font-size:16px}
-.main{padding:30px;min-width:0;max-width:1500px;width:100%;margin:auto}
-.page-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:24px}
-.page-head h2{margin:5px 0 0}
-.panel{
-  background:var(--panel);border:1px solid var(--line);
-  border-radius:13px;padding:20px
-}
-.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:15px}
-.panel-title h3{margin:0}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px}
-.stat strong{font-size:24px;display:block}
-.stat span{font-size:11px;color:var(--muted)}
-.two-col{display:grid;grid-template-columns:1.35fr .85fr;gap:16px}
-.badge{
-  display:inline-block;border:1px solid #63735e;color:var(--green);
-  border-radius:30px;padding:5px 9px;font-size:10px;font-weight:800;
-  letter-spacing:.6px
-}
-.badge.gold{color:var(--gold);border-color:#796b48}
-.badge.grey{color:#c0c5c0;border-color:#69716b}
-
-/* MAP */
-.map-wrap{
-  position:relative;overflow:hidden;border:1px solid #485b4b;
-  border-radius:14px;min-height:590px;
-  background:
-    radial-gradient(ellipse at 25% 20%,#465c4930,transparent 30%),
-    radial-gradient(ellipse at 75% 75%,#52634b35,transparent 35%),
-    linear-gradient(135deg,#263b31,#1d3029 48%,#293d32);
-}
-.map-wrap:before{
-  content:"";position:absolute;inset:0;opacity:.23;
-  background-image:repeating-linear-gradient(25deg,transparent 0 65px,#a3b39b 66px,#a3b39b 67px,transparent 68px 130px);
-  pointer-events:none
-}
-.map-wrap:after{
-  content:"";position:absolute;inset:0;opacity:.16;
-  background-image:radial-gradient(#dce5d7 1px,transparent 1px);
-  background-size:18px 18px;pointer-events:none
-}
-.map-water{
-  position:absolute;right:-5%;top:-5%;width:23%;height:110%;
-  background:linear-gradient(90deg,transparent,#526c7450);
-  transform:rotate(7deg);border-left:2px solid #8ca3a044
-}
-.map-road{
-  position:absolute;height:2px;background:#d3c79a66;transform-origin:left;
-  z-index:1;pointer-events:none
-}
-.map-road.major{height:3px;background:#d7c89a88}
-.map-title{
-  position:absolute;top:17px;left:20px;z-index:3;
-  font-size:10px;letter-spacing:2px;color:#dce4d6
-}
-.map-compass{
-  position:absolute;right:20px;top:18px;z-index:3;color:#dce4d6;
-  font-size:11px;text-align:center
-}
-.map-point{
-  position:absolute;z-index:4;transform:translate(-50%,-50%);
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  border:0;background:transparent;color:#eef0e7;padding:4px;
-  min-width:76px
-}
-.stadium{
-  width:35px;height:29px;border:1px solid #d5dfcb;
-  background:#1c2a22;border-radius:7px 7px 5px 5px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 12px #0006;position:relative
-}
-.stadium:before{
-  content:"";position:absolute;top:-5px;left:4px;right:4px;height:8px;
-  border:1px solid #d5dfcb;border-bottom:0;border-radius:9px 9px 0 0;
-  background:#657c5b
-}
-.stadium svg{width:21px;height:17px;position:relative;z-index:1}
-.map-name{
-  font-size:10px;font-weight:800;text-shadow:0 2px 5px #000;
-  white-space:nowrap;background:#17231dd9;padding:3px 6px;border-radius:4px
-}
-.map-point:hover .stadium{border-color:var(--green);background:#38523a}
-.map-point.next .stadium{border:2px solid var(--green);box-shadow:0 0 0 5px #a5d66b25,0 4px 15px #0008}
-.map-point.home .stadium{background:#536b37;border-color:#e5d39a}
-.map-point.done{opacity:.5}
-.map-legend{
-  display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;
-  color:var(--muted);font-size:11px
-}
-.legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:var(--green)}
-.legend-dot.grey{background:#849087}.legend-dot.gold{background:var(--gold)}
-.map-info{margin-top:12px;font-size:12px;color:var(--muted);min-height:18px}
-
-/* TABLES AND LISTS */
-.table-scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;font-size:12px;min-width:520px}
-th{text-align:left;color:var(--muted);font-size:10px;letter-spacing:.8px;font-weight:700}
-th,td{padding:12px 10px;border-bottom:1px solid #344239}
-tr:last-child td{border-bottom:0}
-tr.user-row td{color:var(--green);background:#a5d66b0b}
-.fixture-list{display:grid;gap:8px}
-.fixture{
-  display:grid;grid-template-columns:65px 1fr auto;gap:12px;
-  align-items:center;background:#202c24;border:1px solid var(--line);
-  border-radius:9px;padding:13px
-}
-.fixture-date{font-size:11px;color:var(--muted)}
-.fixture-teams{font-size:13px;font-weight:750}
-.fixture-place{font-size:11px;color:var(--muted);margin-top:4px}
-.fixture-status{font-size:10px;color:var(--green);text-align:right}
-.fixture.cup{border-color:#766746}
-.section-label{font-size:10px;color:var(--green);letter-spacing:1.5px;margin:24px 0 10px}
-
-/* SQUAD AND TACTICS */
-.squad-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
-.player-slot{
-  border:1px solid var(--line);background:#202b24;border-radius:9px;
-  padding:12px;min-width:0
-}
-.player-slot .rating{font-size:21px;font-weight:900;color:#c4cbc4}
-.player-slot .position{font-size:10px;color:var(--green);font-weight:900}
-.player-slot .player-name{font-size:12px;font-weight:750;margin:5px 0}
-.player-slot .tier{font-size:9px;color:var(--muted);letter-spacing:1px}
-.select-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-select{
-  width:100%;background:#202c24;color:var(--cream);
-  border:1px solid var(--line);border-radius:8px;padding:11px
-}
-.pitch-board{
-  background:repeating-linear-gradient(0deg,#31543a 0 55px,#294b34 55px 110px);
-  border:1px solid #68806a;border-radius:12px;padding:15px;
-  min-height:490px;display:flex;flex-direction:column;justify-content:space-around;
-  position:relative;overflow:hidden
-}
-.pitch-board:before{
-  content:"";position:absolute;inset:10px;border:1px solid #ffffff50;pointer-events:none
-}
-.pitch-board:after{
-  content:"";position:absolute;left:10px;right:10px;top:50%;border-top:1px solid #ffffff50
-}
-.formation-line{display:flex;justify-content:space-evenly;gap:4px;position:relative;z-index:1}
-.formation-player{
-  width:42px;height:42px;border-radius:50%;background:#e8eee0;color:#203126;
-  border:2px solid #a5d66b;display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:900;box-shadow:0 3px 7px #0005
-}
-.formation-player small{font-size:8px}
-.tactics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.sub-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.sub-slot{background:#202c24;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:11px}
-.callout{padding:13px;background:#26372a;border-left:3px solid var(--green);border-radius:5px;color:#d6e2d3;font-size:12px;line-height:1.6}
-
-/* SMALL SCREENS */
-@media(max-width:900px){
- .menu{grid-template-columns:1fr;padding:28px;gap:24px}
- .hero-copy{max-width:none}
- .pitch-art{max-width:100%;margin-top:20px}
- .layout{grid-template-columns:1fr}
- .sidebar{position:sticky;top:68px;z-index:9;display:flex;overflow-x:auto;
-  border-right:0;border-bottom:1px solid var(--line);padding:8px}
- .nav-label{display:none}
- .nav-btn{width:auto;white-space:nowrap;padding:10px;font-size:11px}
- .main{padding:20px}
- .two-col,.tactics-grid{grid-template-columns:1fr}
- .map-wrap{min-height:560px}
-}
-@media(max-width:560px){
- .menu{padding:20px}
- .menu-panel{padding:19px}
- .topbar{padding:0 15px}
- .main{padding:14px}
- .stat-grid{grid-template-columns:repeat(2,1fr)}
- .squad-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
- .page-head{align-items:flex-start;flex-direction:column}
- .map-wrap{min-height:500px}
- .map-point{min-width:60px}
- .map-name{font-size:8px}
- .stadium{width:29px;height:25px}
- .fixture{grid-template-columns:45px 1fr auto;padding:10px}
- .fixture-teams{font-size:11px}
- .run-label{display:none}
+.pill{display:inline-block;padding:5px 9px;border-radius:30px;background:#263b30;color:var(--green);font-size:12px;font-weight:bold}
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.nav button{background:#1b3025;color:var(--white);border:1px solid var(--line)}
+.nav button.active{background:var(--green);color:#102016}
+.statrow{display:flex;gap:10px;flex-wrap:wrap}
+.stat{background:#1b3025;padding:12px 15px;border-radius:10px;min-width:100px}
+.stat b{display:block;font-size:22px;color:var(--green)}
+.stat span{font-size:12px;color:var(--muted)}
+.map-wrap{background:#10251c;border:1px solid var(--line);border-radius:16px;padding:10px;overflow:hidden}
+.map-wrap svg{width:100%;height:auto;display:block}
+.map-label{font-size:12px;fill:#f3f7f2;font-weight:bold}
+.map-pin{cursor:pointer}
+.map-pin circle{fill:#d5e5d6;stroke:#102016;stroke-width:3}
+.map-pin.home circle{fill:var(--gold);stroke:#fff}
+.map-pin text{fill:white;font-size:11px;font-weight:bold}
+.map-key{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted);padding:10px}
+.key-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#d5e5d6;margin-right:5px}
+.key-dot.home{background:var(--gold)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:11px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-size:11px;text-transform:uppercase}
+tr.highlight{background:#20392a}
+.fixture{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#192d24;border:1px solid var(--line);border-radius:10px;padding:13px;margin:8px 0}
+.fixture .teams{font-weight:bold;flex:1}
+.fixture .meta{color:var(--muted);font-size:12px;text-align:right}
+.fixture .home{color:var(--green)}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:25px}
+select{background:#1b3025;color:white;border:1px solid var(--line);border-radius:8px;padding:10px;max-width:100%}
+.pitch{position:relative;max-width:660px;margin:auto;aspect-ratio:0.82;background:linear-gradient(90deg,#174c32,#1b5838,#174c32);border:3px solid #d8e8d8;border-radius:8px;overflow:hidden}
+.pitch:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 9.5%,#ffffff08 9.5% 19%);pointer-events:none}
+.pitch .halfline{position:absolute;top:50%;left:0;right:0;border-top:2px solid #ffffff70}
+.pitch .circle{position:absolute;top:50%;left:50%;width:28%;aspect-ratio:1;border:2px solid #ffffff70;border-radius:50%;transform:translate(-50%,-50%)}
+.pitch .box-top,.pitch .box-bottom{position:absolute;left:25%;width:50%;height:15%;border:2px solid #ffffff70}
+.pitch .box-top{top:0;border-top:0}.pitch .box-bottom{bottom:0;border-bottom:0}
+.pitch .player-slot{position:absolute;transform:translate(-50%,-50%);width:72px;text-align:center;z-index:2}
+.player-dot{background:#e4f1dd;color:#132319;border-radius:9px;padding:7px 3px;border:2px solid #15281d;box-shadow:0 3px 8px #0006;font-size:11px;font-weight:bold;min-height:38px}
+.player-slot.gk .player-dot{background:#f1c86d}
+.player-slot.captain .player-dot{border:3px solid var(--gold)}
+.player-slot .position-name{font-size:10px;color:white;text-shadow:0 1px 3px black;margin-top:3px}
+.armband{color:var(--gold);font-weight:900}
+.player-slot select{width:100%;font-size:10px;padding:4px;margin-top:3px}
+.pitch-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:15px 0}
+.player-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}
+.player-item{background:#1b3025;padding:11px;border-radius:9px;border:1px solid var(--line)}
+.player-item strong{display:block;margin-bottom:5px}
+.token{border:1px dashed var(--gold);padding:14px;border-radius:10px;background:#2b291b}
+.empty{padding:20px;text-align:center;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+#game{display:none}
+@media(max-width:600px){
+ header{align-items:flex-start;flex-direction:column}
+ .fixture{align-items:flex-start;flex-direction:column}
+ .fixture .meta{text-align:left}
+ th,td{padding:8px 4px;font-size:12px}
+ .player-slot{width:57px!important}
+ .player-dot{font-size:9px;padding:5px 1px}
 }
 </style>
 </head>
 <body>
-<div id="app"></div>
+
+<header>
+  <div class="brand">FOOTBALL <span>FOR LIFE</span></div>
+  <small>ROGUE TO GLORY</small>
+</header>
+
+<main>
+<section id="start" class="screen active">
+  <div class="panel">
+    <span class="pill">YOUR JOURNEY STARTS HERE</span>
+    <h1>Football For Life :<br><span style="color:var(--green)">Rogue To Glory</span></h1>
+    <p>Build your club, develop your squad and fight your way through the season.</p>
+  </div>
+  <div class="panel">
+    <h2>Choose your perk</h2>
+    <p>Choose one perk for this run. Your choice will stay active throughout the run.</p>
+    <div class="grid" id="perkGrid"></div>
+    <p id="perkMessage" class="small">Select one perk to continue.</p>
+    <button id="startButton" disabled onclick="startRun()">START YOUR JOURNEY</button>
+  </div>
+</section>
+
+<section id="game">
+  <div class="statrow" style="margin-bottom:18px">
+    <div class="stat"><b id="weekStat">1</b><span>League fixture</span></div>
+    <div class="stat"><b id="recordStat">0-0-0</b><span>W-D-L</span></div>
+    <div class="stat"><b id="squadStat">14</b><span>Squad players</span></div>
+    <div class="stat"><b id="perkStat">—</b><span>Active perk</span></div>
+  </div>
+
+  <nav class="nav">
+    <button class="active" onclick="showScreen('map',this)">Map</button>
+    <button onclick="showScreen('training',this)">Training</button>
+    <button onclick="showScreen('fixtures',this)">Fixtures</button>
+    <button onclick="showScreen('table',this)">League Table</button>
+    <button onclick="showScreen('tactics',this)">Tactics</button>
+  </nav>
+
+  <section id="map" class="screen active">
+    <div class="section-title"><h2>North West Football Map</h2><span class="pill">YOUR CLUB: ELLESMERE PORT</span></div>
+    <p>Explore the clubs in your league. Your home ground is C of E College.</p>
+    <div class="map-wrap">
+      <svg viewBox="0 0 760 690" role="img" aria-label="Stylised regional map showing the league clubs">
+        <defs>
+          <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#466b51"/>
+            <stop offset="1" stop-color="#294b3b"/>
+          </linearGradient>
+          <pattern id="terrain" width="60" height="60" patternUnits="userSpaceOnUse">
+            <path d="M0 30 Q15 10 30 30 T60 30 M0 55 Q15 35 30 55 T60 55" fill="none" stroke="#a4c19b" stroke-opacity=".10" stroke-width="1.5"/>
+          </pattern>
+        </defs>
+        <rect width="760" height="690" fill="#10251e"/>
+        <path d="M125 38 L270 18 L375 60 L510 75 L615 155 L650 270 L610 355 L650 465 L580 585 L455 640 L330 610 L220 650 L115 570 L75 450 L95 325 L45 225 L80 115 Z" fill="url(#land)" stroke="#789b7d" stroke-width="3"/>
+        <path d="M125 38 L270 18 L375 60 L510 75 L615 155 L650 270 L610 355 L650 465 L580 585 L455 640 L330 610 L220 650 L115 570 L75 450 L95 325 L45 225 L80 115 Z" fill="url(#terrain)"/>
+        <path d="M95 325 Q220 300 310 350 T610 355 M115 570 Q240 500 330 420 T615 155 M80 115 Q260 180 375 250 T650 465" fill="none" stroke="#d7d2a1" stroke-opacity=".28" stroke-width="5"/>
+        <path d="M45 225 Q160 230 245 285 T455 390 T650 465" fill="none" stroke="#d4c69a" stroke-opacity=".35" stroke-width="2" stroke-dasharray="8 8"/>
+        <path d="M170 70 Q220 180 190 270 T220 560" fill="none" stroke="#9db3a2" stroke-opacity=".25" stroke-width="2"/>
+        <text x="360" y="95" fill="#d9e8d9" opacity=".55" font-size="16" letter-spacing="4">NORTH WEST</text>
+        <text x="550" y="620" fill="#d9e8d9" opacity=".4" font-size="12">REGIONAL LEAGUE</text>
+
+        <g id="mapPins"></g>
+      </svg>
+      <div class="map-key">
+        <span><i class="key-dot home"></i>Football For Life</span>
+        <span><i class="key-dot"></i>League opponent</span>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:15px">
+      <h3 id="mapClubName">Football For Life</h3>
+      <p id="mapClubDetail">Ellesmere Port · C of E College</p>
+    </div>
+  </section>
+
+  <section id="training" class="screen">
+    <h2>Training Ground</h2>
+    <div class="panel">
+      <span class="pill">TRAINING CENTRE</span>
+      <h3>Develop your squad</h3>
+      <p>Training activities and player development will be added here.</p>
+      <p id="trainingPerk" class="muted"></p>
+      <button class="secondary" disabled>TRAINING ACTIVITIES COMING LATER</button>
+    </div>
+  </section>
+
+  <section id="fixtures" class="screen">
+    <h2>Season Fixtures</h2>
+    <p>All 15 opponents are played once in the first half. The second half reverses the venues.</p>
+    <div class="panel">
+      <div class="statrow">
+        <div class="stat"><b>30</b><span>League games</span></div>
+        <div class="stat"><b>15</b><span>Home games</span></div>
+        <div class="stat"><b>15</b><span>Away games</span></div>
+      </div>
+    </div>
+    <div id="fixtureList"></div>
+    <div class="section-title"><h2>Cup Competition</h2><span class="pill">SEPARATE FROM LEAGUE</span></div>
+    <p>Cup ties take place after league fixtures 8, 16, 24 and 30. All cup ties are hosted at C of E College.</p>
+    <div id="cupList"></div>
+  </section>
+
+  <section id="table" class="screen">
+    <h2>League Table</h2>
+    <p>The table updates as league results are entered.</p>
+    <div class="panel" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="tactics" class="screen">
+    <h2>Squad & Tactics</h2>
+    <div class="panel">
+      <div class="section-title"><h3>Choose your formation</h3>
+        <select id="formationSelect" onchange="changeFormation(this.value)">
+          <option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>5-3-2</option><option>3-4-1-2</option>
+        </select>
+      </div>
+      <p id="formationDescription">Two strikers, four midfielders and four defenders.</p>
+      <div class="pitch">
+        <div class="halfline"></div><div class="circle"></div>
+        <div class="box-top"></div><div class="box-bottom"></div>
+        <div id="pitchPlayers"></div>
+      </div>
+      <p class="small">The goalkeeper is always at the bottom. Forwards are at the top.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Captain's armband</h3>
+      <p>Choose one player to captain your club. Their armband appears on the pitch.</p>
+      <select id="captainSelect" onchange="setCaptain(this.value)"></select>
+      <p id="captainMessage" class="small muted"></p>
+    </div>
+
+    <div class="panel">
+      <h3>Bonus token inventory</h3>
+      <p>Tokens you collect will appear here. Select a token and then a player to apply it.</p>
+      <div id="tokenInventory" class="empty">No bonus tokens collected yet.</div>
+      <div id="tokenApplyArea" style="display:none;margin-top:12px">
+        <label for="tokenPlayer">Apply selected token to:</label>
+        <select id="tokenPlayer"></select>
+        <button onclick="applySelectedToken()">Apply token</button>
+      </div>
+      <p class="small muted">Token types and effects will be added when you provide the token list.</p>
+    </div>
+
+    <div class="panel">
+      <h3>Full squad</h3>
+      <div id="squadList" class="player-list"></div>
+    </div>
+  </section>
+</section>
+</main>
 
 <script>
-"use strict";
-
-/* -----------------------------
-   GAME DATA
------------------------------- */
-
 const CLUBS = [
-  {name:"Chester",x:35,y:43},
-  {name:"Warrington",x:53,y:35},
-  {name:"Wrexham",x:27,y:53},
-  {name:"Wirral",x:24,y:37},
-  {name:"Stoke",x:70,y:65},
-  {name:"Salford",x:60,y:25},
-  {name:"St Helens",x:47,y:30},
-  {name:"Blackpool",x:31,y:10},
-  {name:"Bolton",x:62,y:15},
-  {name:"Blackburn",x:70,y:22},
-  {name:"Crewe",x:51,y:59},
-  {name:"Rochdale",x:75,y:34},
-  {name:"Sandwell",x:82,y:76},
-  {name:"Redditch",x:88,y:91},
-  {name:"West Brom",x:82,y:65},
-  {name:"Ellesmere Port",x:34,y:32,home:true}
+ {name:"Football For Life",place:"Ellesmere Port",x:300,y:425,home:true},
+ {name:"Chester",place:"Chester",x:270,y:465},
+ {name:"Warrington",place:"Warrington",x:330,y:330},
+ {name:"Wrexham",place:"Wrexham",x:230,y:520},
+ {name:"Wirral",place:"Wirral",x:220,y:390},
+ {name:"Stoke",place:"Stoke-on-Trent",x:520,y:545},
+ {name:"Salford",place:"Salford",x:405,y:245},
+ {name:"St Helens",place:"St Helens",x:365,y:300},
+ {name:"Blackpool",place:"Blackpool",x:230,y:160},
+ {name:"Bolton",place:"Bolton",x:420,y:205},
+ {name:"Blackburn",place:"Blackburn",x:430,y:145},
+ {name:"Crewe",place:"Crewe",x:385,y:465},
+ {name:"Rochdale",place:"Rochdale",x:475,y:250},
+ {name:"Sandwell",place:"Sandwell",x:575,y:610},
+ {name:"Redditch",place:"Redditch",x:620,y:660},
+ {name:"West Brom",place:"West Bromwich",x:590,y:575}
 ];
 
 const PERKS = [
-  {id:"home",name:"Home Advantage",desc:"Increase your odds of winning at home."},
-  {id:"captain",name:"Captain My Captain",desc:"Your captain gains bonus stats."},
-  {id:"roller",name:"High Roller",desc:"Reroll all card rewards once, except Big Matches."},
-  {id:"training",name:"Training Specialist",desc:"Train twice a week."},
-  {id:"scout",name:"Lucky Scout",desc:"Your first card rewards are higher rarity."}
+ {name:"Home Ad",description:"Increase your odds of winning at home."},
+ {name:"Captain",description:"Your captain gains bonus stats."},
+ {name:"High Roller",description:"Reroll all card rewards once, except Big Matches."},
+ {name:"Training Spec",description:"Train twice a week."},
+ {name:"Scout",description:"First card rewards are higher rarity."}
 ];
 
 const FORMATIONS = {
-  "4-4-2":[2,4,4,1],
-  "4-3-3":[3,3,3,1],
-  "4-2-3-1":[1,3,2,4],
-  "5-3-2":[2,3,5,1],
-  "3-4-1-2":[2,1,4,3]
+ "4-4-2":{lines:[2,4,4],description:"Two strikers, four midfielders and four defenders."},
+ "4-3-3":{lines:[3,3,4],description:"Three forwards, three midfielders and four defenders."},
+ "4-2-3-1":{lines:[1,3,2,4],description:"One striker, three attacking midfielders, two holding midfielders and four defenders."},
+ "5-3-2":{lines:[2,3,5],description:"Two forwards, three midfielders and five defenders."},
+ "3-4-1-2":{lines:[2,1,4,3],description:"Two strikers, one attacking midfielder, four midfielders and three defenders."}
 };
 
-/* Coordinates are approximate relative positions for a clean
-   regional game map, not a navigation map. */
-
-const STATE = {
-  screen:"menu",
-  selectedPerk:null,
-  runStarted:false,
-  formation:"4-4-2",
-  squad:[],
-  lineup:[],
-  substitutes:[],
-  fixtures:[],
-  table:[],
-  currentFixture:0,
-  cupRounds:[],
-  cupProgress:0,
-  cupEliminated:false,
-  trainingUsed:0,
-  selectedLocation:null
+let state = {
+ started:false,perk:null,formation:"4-4-2",squad:[],lineup:[],
+ captain:null, tokens:[],appliedTokens:[],fixtures:[],cupRounds:[],
+ played:0,record:{w:0,d:0,l:0},table:{}
 };
-
-const app=document.getElementById("app");
 
 function escapeHTML(value){
-  return String(value).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+ return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 
-function shuffle(items){
-  const a=[...items];
-  for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [a[i],a[j]]=[a[j],a[i]];
-  }
-  return a;
+function renderPerks(){
+ const grid=document.getElementById("perkGrid");
+ grid.innerHTML=PERKS.map((p,i)=>`
+ <button class="perk" id="perk${i}" onclick="selectPerk(${i})">
+ <strong>${escapeHTML(p.name)}</strong>${escapeHTML(p.description)}</button>`).join("");
+}
+function selectPerk(i){
+ state.perk=PERKS[i];
+ document.querySelectorAll(".perk").forEach((el,n)=>el.classList.toggle("selected",n===i));
+ document.getElementById("startButton").disabled=false;
+ document.getElementById("perkMessage").textContent="Selected: "+state.perk.name;
 }
 
-/* -----------------------------
-   START MENU
------------------------------- */
-
-function renderMenu(){
-  app.innerHTML=`
-  <main class="menu">
-    <section class="hero-copy">
-      <div class="brand">FOOTBALL <span>FOR LIFE</span></div>
-      <div class="eyebrow" style="margin-top:45px">A football roguelite</div>
-      <h1>FOOTBALL<br>FOR LIFE:<br><em>ROGUE TO GLORY.</em></h1>
-      <p>Build your squad. Navigate the season. Take on the region.
-      Every run begins with a new challenge.</p>
-      <div class="pitch-art" aria-label="Stylised football pitch">
-        <div class="pitch-box top"></div>
-        <div class="pitch-box bottom"></div>
-      </div>
-    </section>
-
-    <section class="menu-panel">
-      <div class="eyebrow">New campaign</div>
-      <h2>Choose your perk</h2>
-      <p class="muted small">Choose one perk to shape your run. Your choice is locked in when you start.</p>
-      <div class="perks" id="perk-list">
-        ${PERKS.map((p,i)=>`
-          <button class="perk" data-perk="${p.id}">
-            <div class="perk-top">
-              <span class="perk-name">${escapeHTML(p.name)}</span>
-              <span class="perk-number">PERK 0${i+1}</span>
-            </div>
-            <div class="perk-desc">${escapeHTML(p.desc)}</div>
-            <div class="tick hidden">✓ SELECTED</div>
-          </button>
-        `).join("")}
-      </div>
-      <button class="primary" id="start-run" disabled>SELECT A PERK TO CONTINUE</button>
-      <div class="menu-note">One perk per run · 16 clubs · 30 league fixtures · Knockout cup</div>
-    </section>
-  </main>`;
-
-  document.querySelectorAll("[data-perk]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      STATE.selectedPerk=button.dataset.perk;
-      document.querySelectorAll("[data-perk]").forEach(b=>{
-        const chosen=b.dataset.perk===STATE.selectedPerk;
-        b.classList.toggle("selected",chosen);
-        b.querySelector(".tick").classList.toggle("hidden",!chosen);
-      });
-      const start=document.getElementById("start-run");
-      start.disabled=false;
-      start.textContent="START YOUR RUN";
-    });
-  });
-
-  document.getElementById("start-run").addEventListener("click",startRun);
+function makePlayer(id,position){
+ const first=["Alex","Jordan","Sam","Charlie","Jamie","Taylor","Morgan","Riley","Casey","Cameron","Avery","Dylan","Finley","Harvey","Reece","Lewis","Noah","Max"];
+ const last=["Williams","Davies","Jones","Taylor","Brown","Wilson","Evans","Thomas","Roberts","Walker","Hughes","Clarke","Wood","Green","Hall","Baker"];
+ const name=first[Math.floor(Math.random()*first.length)]+" "+last[Math.floor(Math.random()*last.length)];
+ return {id,name,position,rating:40+Math.floor(Math.random()*11),tier:"Grey",tokens:[]};
+}
+function createSquad(){
+ const players=[makePlayer(1,"GK")];
+ const positions=["CB","CB","LB","RB","CM","CM","CM","CDM","LM","RM","LW","RW","ST"];
+ positions.forEach((p,i)=>players.push(makePlayer(i+2,p)));
+ return players;
 }
 
-/* -----------------------------
-   CREATE A RUN
------------------------------- */
+function shuffle(arr){
+ const a=[...arr];
+ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+ return a;
+}
+
+function createFixtures(){
+ // Random first-leg order: every opponent exactly once.
+ const opponents=shuffle(CLUBS.filter(c=>!c.home));
+ const firstLeg=opponents.map((opponent,index)=>({
+   number:index+1,opponent:opponent.name,home:index%2===0,played:false,result:null
+ }));
+ // Second leg reverses the venue for each same opponent.
+ const secondLeg=firstLeg.map((f,index)=>({
+   number:index+16,opponent:f.opponent,home:!f.home,played:false,result:null
+ }));
+ return [...firstLeg,...secondLeg];
+}
+
+function createCup(){
+ // A genuine random knockout draw of all 16 clubs.
+ let entrants=shuffle(CLUBS.map(c=>c.name));
+ const rounds=[];
+ const labels=["Round of 16","Quarter-finals","Semi-finals","Final"];
+ const after=[8,16,24,30];
+ let pairings=[];
+ for(let i=0;i<entrants.length;i+=2){
+   pairings.push({a:entrants[i],b:entrants[i+1],winner:null});
+ }
+ rounds.push({name:labels[0],after:after[0],matches:pairings});
+ for(let r=1;r<4;r++){
+   const next=[];
+   for(let i=0;i<pairings.length;i+=2){
+     next.push({a:"Winner "+(i+1),b:"Winner "+(i+2),winner:null});
+   }
+   pairings=next;
+   rounds.push({name:labels[r],after:after[r],matches:pairings});
+ }
+ return rounds;
+}
 
 function startRun(){
-  if(!STATE.selectedPerk)return;
-
-  STATE.squad=[];
-  STATE.squad.push(makePlayer("Goalkeeper","GK"));
-  for(let i=0;i<13;i++){
-    STATE.squad.push(makePlayer("Outfield player",randomPosition()));
-  }
-
-  STATE.lineup=STATE.squad.slice(0,11).map(p=>p.id);
-  STATE.substitutes=STATE.squad.slice(11,14).map(p=>p.id);
-  STATE.fixtures=generateFixtures();
-  STATE.table=CLUBS.map(c=>({
-    name:c.name,played:0,w:0,d:0,l:0,gf:0,ga:0,pts:0
-  }));
-  STATE.currentFixture=0;
-  STATE.cupRounds=generateCup();
-  STATE.cupProgress=0;
-  STATE.cupEliminated=false;
-  STATE.trainingUsed=0;
-  STATE.runStarted=true;
-  STATE.screen="map";
-  renderApp();
+ if(!state.perk)return;
+ state.started=true;
+ state.squad=createSquad();
+ state.lineup=state.squad.slice(0,11).map(p=>p.id);
+ state.captain=state.squad[0].id;
+ state.fixtures=createFixtures();
+ state.cupRounds=createCup();
+ CLUBS.forEach(c=>state.table[c.name]={p:0,w:0,d:0,l:0,gf:0,ga:0,pts:0});
+ document.getElementById("start").classList.remove("active");
+ document.getElementById("game").style.display="block";
+ document.getElementById("perkStat").textContent=state.perk.name;
+ document.getElementById("trainingPerk").textContent=state.perk.name==="Training Spec"?"Your perk allows two training sessions each week.":"Your selected perk: "+state.perk.description;
+ renderAll();
+ showScreen("map",document.querySelector(".nav button"));
 }
 
-let playerCounter=0;
-function makePlayer(label,position){
-  playerCounter++;
-  return {
-    id:"p"+playerCounter,
-    name:label+" "+String(playerCounter).padStart(2,"0"),
-    position,
-    rating:50,
-    tier:"GREY"
-  };
-}
-function randomPosition(){
-  return shuffle(["CB","CB","LB","RB","CM","CM","CDM","CAM","LW","RW","ST","ST"])[0];
+function showScreen(id,button){
+ document.querySelectorAll("#game .screen").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ document.querySelectorAll(".nav button").forEach(b=>b.classList.remove("active"));
+ if(button)button.classList.add("active");
+ if(id==="tactics")renderTactics();
+ if(id==="fixtures")renderFixtures();
+ if(id==="table")renderTable();
 }
 
-/* -----------------------------
-   DOUBLE ROUND ROBIN FIXTURES
-   16 clubs = 30 matches per club
------------------------------- */
-
-function generateFixtures(){
-  const names=CLUBS.map(c=>c.name);
-  const rounds=[];
-  let teams=[...names];
-
-  for(let round=0;round<15;round++){
-    const matches=[];
-    for(let i=0;i<8;i++){
-      let home=teams[i],away=teams[15-i];
-      if((round+i)%2===1)[home,away]=[away,home];
-      matches.push({home,away,round:round+1,played:false});
-    }
-    rounds.push(matches);
-    teams=[teams[0],teams[15],...teams.slice(1,15-1)];
-  }
-
-  const returnRounds=rounds.map((matches,index)=>
-    matches.map(m=>({
-      home:m.away,away:m.home,round:index+16,played:false
-    }))
-  );
-
-  const all=[...rounds,...returnRounds];
-  return shuffle(all).map((round,index)=>({
-    week:index+1,
-    matches:round
-  }));
+function renderAll(){
+ renderMap();renderFixtures();renderTable();renderTactics();updateStats();
 }
 
-/* -----------------------------
-   RANDOM CUP DRAW
------------------------------- */
-
-function generateCup(){
-  const entrants=shuffle(CLUBS.map(c=>c.name));
-  const rounds=[];
-  let current=entrants;
-
-  for(const stage of ["Round of 16","Quarter-finals","Semi-finals","Final"]){
-    const pairings=[];
-    for(let i=0;i<current.length;i+=2){
-      pairings.push({
-        home:"Football For Life",
-        away:current[i+1]||current[i],
-        stage,
-        completed:false
-      });
-    }
-    rounds.push({stage,pairings});
-    current=current.filter((_,i)=>i%2===0);
-  }
-  return rounds;
+function renderMap(){
+ document.getElementById("mapPins").innerHTML=CLUBS.map((c,i)=>`
+ <g class="map-pin ${c.home?"home":""}" transform="translate(${c.x},${c.y})" onclick="selectMapClub(${i})">
+ <circle r="${c.home?12:8}"></circle>
+ <text x="13" y="4">${escapeHTML(c.name)}</text>
+ </g>`).join("");
+}
+function selectMapClub(i){
+ const c=CLUBS[i];
+ document.getElementById("mapClubName").textContent=c.name;
+ document.getElementById("mapClubDetail").textContent=c.place+(c.home?" · Home ground: C of E College":" · League opponent");
 }
 
-/* -----------------------------
-   MAIN APP SHELL
------------------------------- */
-
-function renderApp(){
-  app.innerHTML=`
-    <header class="topbar">
-      <div class="brand">FOOTBALL <span>FOR LIFE</span> : ROGUE TO GLORY</div>
-      <div class="run-label">SEASON ONE · ${escapeHTML(PERKS.find(p=>p.id===STATE.selectedPerk)?.name||"No perk")}</div>
-    </header>
-    <div class="layout">
-      <aside class="sidebar">
-        <div class="nav-label">YOUR CAMPAIGN</div>
-        ${navButton("map","⌖","Map")}
-        ${navButton("training","✚","Training")}
-        ${navButton("fixtures","▤","Fixtures")}
-        ${navButton("table","▥","League Table")}
-        ${navButton("tactics","⚑","Tactics")}
-      </aside>
-      <main class="main" id="main-view"></main>
-    </div>
-  `;
-  document.querySelectorAll("[data-screen]").forEach(button=>{
-    button.addEventListener("click",()=>goTo(button.dataset.screen));
-  });
-  renderScreen();
-}
-function navButton(id,icon,label){
-  return `<button class="nav-btn ${STATE.screen===id?"active":""}" data-screen="${id}">
-    <span class="nav-icon">${icon}</span>${label}
-  </button>`;
-}
-function goTo(screen){
-  STATE.screen=screen;
-  renderApp();
-}
-function renderScreen(){
-  const view=document.getElementById("main-view");
-  if(STATE.screen==="map")view.innerHTML=mapScreen();
-  if(STATE.screen==="training")view.innerHTML=trainingScreen();
-  if(STATE.screen==="fixtures")view.innerHTML=fixturesScreen();
-  if(STATE.screen==="table")view.innerHTML=tableScreen();
-  if(STATE.screen==="tactics")view.innerHTML=tacticsScreen();
-  bindScreenActions();
+function renderFixtures(){
+ const container=document.getElementById("fixtureList");
+ container.innerHTML="";
+ state.fixtures.forEach(f=>{
+   const home=f.home?"Football For Life":f.opponent;
+   const away=f.home?f.opponent:"Football For Life";
+   const div=document.createElement("div");
+   div.className="fixture";
+   div.innerHTML=`
+    <span class="pill">#${f.number}</span>
+    <div class="teams"><span class="${f.home?"home":""}">${escapeHTML(home)}</span> <span class="muted">vs</span> ${escapeHTML(away)}</div>
+    <div class="meta">${f.home?"HOME · C of E College":"AWAY · "+escapeHTML(CLUBS.find(c=>c.name===f.opponent)?.place||f.opponent)}<br>${f.played?"Played":"Upcoming"}</div>`;
+   container.appendChild(div);
+ });
+ const cups=document.getElementById("cupList");
+ cups.innerHTML=state.cupRounds.map((round,ri)=>`
+  <div class="panel">
+   <div class="section-title"><h3>${round.name}</h3><span class="pill">After fixture ${round.after}</span></div>
+   ${round.matches.map(m=>`
+    <div class="fixture"><div class="teams">${escapeHTML(m.a)} <span class="muted">vs</span> ${escapeHTML(m.b)}</div>
+    <div class="meta">CUP · C of E College<br>${m.winner?"Winner: "+escapeHTML(m.winner):"Pending draw"}</div></div>`).join("")}
+  </div>`).join("");
 }
 
-/* -----------------------------
-   MAP SCREEN
------------------------------- */
-
-function mapScreen(){
-  const next=getNextFixture();
-  const nextLocation=next?next.away:null;
-
-  const roads=[
-    [15,32,65,24,"major"],[18,58,58,-16,""],
-    [25,78,58,-22,""],[30,10,40,62,"major"],
-    [48,15,25,60,""],[52,30,32,45,"major"],
-    [20,45,72,32,""]
-  ];
-
-  return `
-    <div class="page-head">
-      <div><div class="eyebrow">Your campaign</div><h2>Regional map</h2>
-      <div class="muted small">North West and surrounding regions</div></div>
-      <span class="badge">SEASON IN PROGRESS</span>
-    </div>
-    <div class="stat-grid">
-      <div class="stat"><strong>${STATE.currentFixture}/30</strong><span>League fixtures</span></div>
-      <div class="stat"><strong>${STATE.table.find(t=>t.name==="Ellesmere Port")?.pts||0}</strong><span>League points</span></div>
-      <div class="stat"><strong>${STATE.cupEliminated?"OUT":"ACTIVE"}</strong><span>Cup status</span></div>
-      <div class="stat"><strong>14</strong><span>Squad players</span></div>
-    </div>
-    <section class="map-wrap">
-      <div class="map-water"></div>
-      <div class="map-title">NORTH WEST REGIONAL FOOTBALL MAP</div>
-      <div class="map-compass">N<br>↑</div>
-      ${roads.map(r=>`<div class="map-road ${r[4]}" style="left:${r[0]}%;top:${r[1]}%;width:${r[2]}%;transform:rotate(${r[3]}deg)"></div>`).join("")}
-      ${CLUBS.map((c,i)=>{
-        const isHome=c.name==="Ellesmere Port";
-        const isNext=c.name===nextLocation;
-        const done=STATE.fixtures.slice(0,STATE.currentFixture).some(f=>
-          f.matches.some(m=>m.away===c.name||m.home===c.name)
-        );
-        return `
-          <button class="map-point ${isHome?"home":""} ${isNext?"next":""} ${done&&!isHome?"done":""}"
-            style="left:${c.x}%;top:${c.y}%"
-            data-location="${escapeHTML(c.name)}"
-            aria-label="${escapeHTML(c.name)}">
-            <span class="stadium">
-              <svg viewBox="0 0 24 18" fill="none" aria-hidden="true">
-                <path d="M3 7L12 2L21 7V15H3V7Z" stroke="#e8eddf" stroke-width="1.2"/>
-                <path d="M6 8H18V15H6V8Z" fill="#8ca47c" stroke="#e8eddf" stroke-width=".8"/>
-                <path d="M9 10H15M9 12H15" stroke="#26392a" stroke-width="1"/>
-              </svg>
-            </span>
-            <span class="map-name">${escapeHTML(c.name)}</span>
-          </button>
-        `;
-      }).join("")}
-    </section>
-    <div class="map-legend">
-      <span><i class="legend-dot"></i>Next fixture</span>
-      <span><i class="legend-dot gold"></i>Football For Life</span>
-      <span><i class="legend-dot grey"></i>Other clubs</span>
-    </div>
-    <div class="map-info" id="map-info">Select a stadium to view its location.</div>
-    <div class="two-col" style="margin-top:18px">
-      <section class="panel">
-        <div class="panel-title"><h3>Next league fixture</h3><span class="badge">WEEK ${next?.week||"—"}</span></div>
-        ${next?`
-          <div style="font-size:20px;font-weight:850">Football For Life</div>
-          <div class="muted small" style="margin:5px 0 12px">away at ${escapeHTML(next.away)}</div>
-          <div class="muted small">${escapeHTML(next.venue)}</div>
-        `:`<p class="muted small">The league season is complete.</p>`}
-        <button class="secondary" style="margin-top:14px" data-go="fixtures">View fixtures</button>
-      </section>
-      <section class="panel">
-        <div class="panel-title"><h3>Home ground</h3><span class="badge gold">HOME</span></div>
-        <div style="font-size:20px;font-weight:850">C of E College</div>
-        <p class="muted small">Ellesmere Port · Football For Life</p>
-      </section>
-    </div>
-  `;
+function renderTable(){
+ const sorted=CLUBS.map(c=>({name:c.name,...state.table[c.name]}))
+ .sort((a,b)=>b.pts-a.pts||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+ document.getElementById("tableBody").innerHTML=sorted.map((r,i)=>`
+ <tr class="${r.name==="Football For Life"?"highlight":""}">
+ <td>${i+1}</td><td>${escapeHTML(r.name)}</td><td>${r.p}</td><td>${r.w}</td><td>${r.d}</td><td>${r.l}</td><td>${r.gf-r.ga}</td><td><b>${r.pts}</b></td></tr>`).join("");
 }
 
-/* Stadium location info and screen navigation */
-function bindScreenActions(){
-  document.querySelectorAll("[data-location]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      const name=button.dataset.location;
-      const info=document.getElementById("map-info");
-      if(info){
-        info.textContent=name==="Ellesmere Port"
-          ?"Football For Life · C of E College · Home ground"
-          :name+" · Regional club location";
-      }
-    });
-  });
-  document.querySelectorAll("[data-go]").forEach(button=>{
-    button.addEventListener("click",()=>goTo(button.dataset.go));
-  });
-  document.querySelectorAll("[data-formation]").forEach(button=>{
-    button.addEventListener("click",()=>{
-      STATE.formation=button.dataset.formation;
-      renderScreen();
-    });
-  });
-  document.querySelectorAll("[data-player-slot]").forEach(select=>{
-    select.addEventListener("change",()=>{
-      const slot=Number(select.dataset.playerSlot);
-      const playerId=select.value;
-      if(!playerId)return;
-      const used=STATE.lineup.indexOf(playerId);
-      if(used!==-1)STATE.lineup[used]=STATE.lineup[slot];
-      STATE.lineup[slot]=playerId;
-      renderScreen();
-    });
-  });
+function updateStats(){
+ document.getElementById("weekStat").textContent=Math.min(state.played+1,30);
+ document.getElementById("recordStat").textContent=`${state.record.w}-${state.record.d}-${state.record.l}`;
+ document.getElementById("squadStat").textContent=state.squad.length;
 }
 
-/* -----------------------------
-   FIXTURE HELPERS
------------------------------- */
-
-function getNextFixture(){
-  const round=STATE.fixtures[STATE.currentFixture];
-  if(!round)return null;
-  const match=round.matches.find(m=>m.home==="Ellesmere Port"||m.away==="Ellesmere Port");
-  if(!match)return null;
-  return {
-    week:round.week,
-    home:match.home,
-    away:match.away,
-    venue:match.home==="Ellesmere Port"?"C of E College":match.home
-  };
+function changeFormation(value){
+ state.formation=value;
+ renderTactics();
 }
 
-function fixturesScreen(){
-  const all=STATE.fixtures.map(round=>{
-    const match=round.matches.find(m=>m.home==="Ellesmere Port"||m.away==="Ellesmere Port");
-    return match?{week:round.week,...match}:null;
-  }).filter(Boolean);
-
-  return `
-    <div class="page-head">
-      <div><div class="eyebrow">Season schedule</div><h2>Fixtures</h2>
-      <div class="muted small">30 league matches · Home and away</div></div>
-      <span class="badge">${STATE.currentFixture} / 30 PLAYED</span>
-    </div>
-    <section class="panel">
-      <div class="panel-title"><h3>League fixtures</h3><span class="muted small">Randomised order</span></div>
-      <div class="fixture-list">
-        ${all.map(f=>`
-          <div class="fixture">
-            <div class="fixture-date">WEEK ${f.week}</div>
-            <div>
-              <div class="fixture-teams">${escapeHTML(f.home==="Ellesmere Port"?"Football For Life":f.home)} vs ${escapeHTML(f.away==="Ellesmere Port"?"Football For Life":f.away)}</div>
-              <div class="fixture-place">${f.home==="Ellesmere Port"?"C of E College":escapeHTML(f.home)} · ${f.home==="Ellesmere Port"?"Home":"Away"}</div>
-            </div>
-            <div class="fixture-status">${f.week<=STATE.currentFixture?"COMPLETED":f.week===STATE.currentFixture+1?"NEXT":"UPCOMING"}</div>
-          </div>
-        `).join("")}
-      </div>
-    </section>
-    <div class="section-label">CUP COMPETITION</div>
-    ${cupScreenMarkup()}
-  `;
+function linePositions(count,lineIndex,totalLines){
+ // Pitch is vertical: forwards at top, keeper at bottom.
+ const y=12+(lineIndex/(totalLines))*76;
+ return Array.from({length:count},(_,i)=>({
+   x:count===1?50:12+(i/(count-1))*76,y
+ }));
 }
 
-function cupScreenMarkup(){
-  return `
-    <section class="panel">
-      <div class="panel-title"><h3>Football For Life Cup</h3><span class="badge gold">BOSS MATCHES</span></div>
-      ${STATE.cupRounds.map((round,index)=>`
-        <div class="section-label">${escapeHTML(round.stage)} ${index===0?"· AFTER FIXTURE 8":index===1?"· AFTER FIXTURE 16":index===2?"· AFTER FIXTURE 24":"· AFTER THE SEASON"}</div>
-        ${round.pairings.map((pair,i)=>`
-          <div class="fixture cup">
-            <div class="fixture-date">CUP</div>
-            <div>
-              <div class="fixture-teams">${escapeHTML(pair.home)} vs ${escapeHTML(pair.away)}</div>
-              <div class="fixture-place">C of E College · Ellesmere Port</div>
-            </div>
-            <div class="fixture-status">${pair.completed?"COMPLETED":index===0?"DRAWN":"PENDING"}</div>
-          </div>
-        `).join("")}
-      `).join("")}
-      <p class="muted small" style="margin:15px 0 0">Cup opponents visit C of E College for every round.</p>
-    </section>
-  `;
+function getPositionGroups(){
+ const formation=FORMATIONS[state.formation];
+ const groups=[];
+ let cursor=0;
+ formation.lines.forEach((count,lineIndex)=>{
+   const line=[];
+   for(let i=0;i<count;i++)line.push(state.lineup[cursor++]);
+   groups.push(line);
+ });
+ return groups;
 }
 
-/* -----------------------------
-   LEAGUE TABLE
------------------------------- */
-
-function tableScreen(){
-  const sorted=[...STATE.table].sort((a,b)=>
-    b.pts-a.pts || (b.gf-b.ga)-(a.gf-a.ga) || b.gf-a.gf
-  );
-  return `
-    <div class="page-head">
-      <div><div class="eyebrow">The league</div><h2>League table</h2>
-      <div class="muted small">All 16 clubs · 30 fixtures per club</div></div>
-      <span class="badge">LIVE TABLE</span>
-    </div>
-    <section class="panel">
-      <div class="table-scroll">
-        <table>
-          <thead><tr><th>#</th><th>CLUB</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>PTS</th></tr></thead>
-          <tbody>
-          ${sorted.map((t,i)=>`
-            <tr class="${t.name==="Ellesmere Port"?"user-row":""}">
-              <td>${i+1}</td><td>${t.name==="Ellesmere Port"?"Football For Life":escapeHTML(t.name)}</td>
-              <td>${t.played}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
-              <td>${t.gf}</td><td>${t.ga}</td><td>${t.gf-t.ga}</td><td><strong>${t.pts}</strong></td>
-            </tr>
-          `).join("")}
-          </tbody>
-        </table>
-      </div>
-      <p class="muted small" style="margin:15px 0 0">The table will update when match results are added to the game.</p>
-    </section>
-  `;
+function renderTactics(){
+ if(!state.squad.length)return;
+ document.getElementById("formationSelect").value=state.formation;
+ document.getElementById("formationDescription").textContent=FORMATIONS[state.formation].description;
+ const groups=getPositionGroups();
+ const totalLines=groups.length;
+ let html="";
+ groups.forEach((group,lineIndex)=>{
+   const positions=linePositions(group.length,lineIndex,totalLines);
+   group.forEach((id,i)=>{
+     const player=state.squad.find(p=>p.id===id);
+     if(!player)return;
+     const captain=player.id===state.captain;
+     html+=`<div class="player-slot ${player.position==="GK"?"gk":""} ${captain?"captain":""}" style="left:${positions[i].x}%;top:${positions[i].y}%">
+       <div class="player-dot">${captain?'<span class="armband">© </span>':""}${escapeHTML(player.name.split(" ")[0])}<br>${player.rating}</div>
+       <div class="position-name">${escapeHTML(player.position)} ${captain?"· CAP":""}</div>
+       <select aria-label="Choose player for position" onchange="replacePlayer(${id},this.value)">
+        ${availablePlayers(id).map(p=>`<option value="${p.id}" ${p.id===id?"selected":""}>${escapeHTML(p.name)} (${p.position})</option>`).join("")}
+       </select>
+     </div>`;
+   });
+ });
+ // Goalkeeper is a separate bottom position.
+ const keeper=state.squad.find(p=>p.position==="GK");
+ html+=`<div class="player-slot gk ${keeper.id===state.captain?"captain":""}" style="left:50%;top:94%">
+   <div class="player-dot">${keeper.id===state.captain?'<span class="armband">© </span>':""}${escapeHTML(keeper.name.split(" ")[0])}<br>${keeper.rating}</div>
+   <div class="position-name">GOALKEEPER</div>
+   <select aria-label="Choose goalkeeper" onchange="replacePlayer(${keeper.id},this.value)">
+   ${state.squad.filter(p=>p.position==="GK").map(p=>`<option value="${p.id}" selected>${escapeHTML(p.name)}</option>`).join("")}
+   </select></div>`;
+ document.getElementById("pitchPlayers").innerHTML=html;
+ renderSquadList();
+ renderCaptain();
+ renderTokens();
 }
 
-/* -----------------------------
-   TRAINING SCREEN
------------------------------- */
-
-function trainingScreen(){
-  const max=STATE.selectedPerk==="training"?2:1;
-  return `
-    <div class="page-head">
-      <div><div class="eyebrow">Player development</div><h2>Training</h2>
-      <div class="muted small">Prepare your squad for the next fixture</div></div>
-      <span class="badge">${STATE.trainingUsed} / ${max} SESSIONS USED</span>
-    </div>
-    <div class="two-col">
-      <section class="panel">
-        <h3>Weekly training</h3>
-        <p class="muted small">Your training allowance depends on your selected perk.</p>
-        <div class="stat" style="margin:16px 0">
-          <strong>${max-STATE.trainingUsed}</strong><span>Sessions remaining this week</span>
-        </div>
-        <button class="primary" id="training-placeholder" disabled>TRAINING SYSTEM COMING LATER</button>
-      </section>
-      <section class="panel">
-        <h3>Your perk</h3>
-        <div class="eyebrow">${escapeHTML(PERKS.find(p=>p.id===STATE.selectedPerk)?.name||"")}</div>
-        <p class="muted small">${escapeHTML(PERKS.find(p=>p.id===STATE.selectedPerk)?.desc||"")}</p>
-      </section>
-    </div>
-    <div class="callout" style="margin-top:16px">Training sessions and player improvements will be connected when the player database and training rules are added.</div>
-  `;
+function availablePlayers(currentId){
+ const used=state.lineup.filter(id=>id!==currentId);
+ const keeper=state.squad.find(p=>p.id===currentId)?.position==="GK";
+ return state.squad.filter(p=>!used.includes(p.id)&&(keeper?p.position==="GK":p.position!=="GK"));
 }
 
-/* -----------------------------
-   TACTICS SCREEN
------------------------------- */
-
-function tacticsScreen(){
-  const shape=FORMATIONS[STATE.formation];
-  const players=STATE.squad;
-  const chosen=STATE.lineup.map(id=>players.find(p=>p.id===id)).filter(Boolean);
-  const rows=shape.map((count,index)=>Array.from({length:count},(_,j)=>({line:index,slot:j})));
-  const ordered=[...rows].reverse();
-  let slot=0;
-
-  const formationHTML=ordered.map(row=>`
-    <div class="formation-line">
-      ${row.map(()=>{
-        const p=chosen[slot]||players[slot];
-        const n=slot++;
-        return `<div class="formation-player" title="${escapeHTML(p?.name||"Player")}">${p?.position||"?"}</div>`;
-      }).join("")}
-    </div>
-  `).join("");
-
-  return `
-    <div class="page-head">
-      <div><div class="eyebrow">Squad management</div><h2>Tactics</h2>
-      <div class="muted small">Pick your formation and starting eleven</div></div>
-      <span class="badge grey">GREY TIER SQUAD</span>
-    </div>
-    <section class="panel" style="margin-bottom:16px">
-      <div class="panel-title"><h3>Formation</h3><span class="muted small">Goalkeeper always at the bottom</span></div>
-      <div class="select-row">
-        <select id="formation-select">
-          ${Object.keys(FORMATIONS).map(f=>`<option ${STATE.formation===f?"selected":""}>${f}</option>`).join("")}
-        </select>
-        <div class="callout">Choose one of the five available formations. Your goalkeeper stays at the bottom of the pitch.</div>
-      </div>
-    </section>
-    <div class="tactics-grid">
-      <section class="panel">
-        <div class="panel-title"><h3>Pitch layout</h3><span class="badge">STARTING XI</span></div>
-        <div class="pitch-board">
-          ${formationHTML}
-          <div class="formation-line"><div class="formation-player">GK</div></div>
-        </div>
-      </section>
-      <section class="panel">
-        <div class="panel-title"><h3>Starting eleven</h3><span class="muted small">14 players total</span></div>
-        <div style="display:grid;gap:9px">
-          ${players.slice(0,11).map((p,i)=>`
-            <label class="small">
-              <span class="muted">${i===0?"Goalkeeper": "Player "+(i+1)}</span>
-              <select data-player-slot="${i}">
-                ${players.map(q=>`<option value="${q.id}" ${STATE.lineup[i]===q.id?"selected":""}>${escapeHTML(q.name)} · ${q.position}</option>`).join("")}
-              </select>
-            </label>
-          `).join("")}
-        </div>
-      </section>
-    </div>
-    <section class="panel" style="margin-top:16px">
-      <div class="panel-title"><h3>Substitutes</h3><span class="badge">3 BENCH SLOTS</span></div>
-      <div class="sub-list">
-        ${STATE.substitutes.map(id=>{
-          const p=players.find(q=>q.id===id);
-          return `<div class="sub-slot"><strong>${escapeHTML(p?.name||"Grey Player")}</strong><br><span class="muted">${p?.position||"Outfield"}</span></div>`;
-        }).join("")}
-      </div>
-      <p class="muted small" style="margin:13px 0 0">The three remaining players are your substitutes. Full bench selection and matchday changes will be added with the match system.</p>
-    </section>
-  `;
+function replacePlayer(oldId,newValue){
+ const newId=Number(newValue);
+ const oldIndex=state.lineup.indexOf(oldId);
+ if(oldIndex<0)return;
+ const otherIndex=state.lineup.indexOf(newId);
+ if(otherIndex>=0){
+   const temp=state.lineup[otherIndex];
+   state.lineup[otherIndex]=oldId;
+ }
+ state.lineup[oldIndex]=newId;
+ renderTactics();
 }
 
-/* -----------------------------
-   RUN
------------------------------- */
+function renderSquadList(){
+ document.getElementById("squadList").innerHTML=state.squad.map(p=>`
+ <div class="player-item">
+ <strong>${escapeHTML(p.name)} ${p.id===state.captain?'<span class="armband">©</span>':""}</strong>
+ <span class="small muted">${escapeHTML(p.position)} · ${p.tier} · Rating ${p.rating}</span>
+ ${p.tokens?.length?`<div class="small">${p.tokens.map(t=>escapeHTML(t.name)).join(", ")}</div>`:""}
+ </div>`).join("");
+}
 
-renderMenu();
+function renderCaptain(){
+ const select=document.getElementById("captainSelect");
+ select.innerHTML=state.squad.map(p=>`<option value="${p.id}" ${p.id===state.captain?"selected":""}>${escapeHTML(p.name)} · ${p.position}</option>`).join("");
+ const captain=state.squad.find(p=>p.id===state.captain);
+ document.getElementById("captainMessage").textContent=captain?captain.name+" is your club captain.": "";
+}
+function setCaptain(id){
+ state.captain=Number(id);
+ renderTactics();
+}
+
+// Token storage is ready for future token types and rewards.
+function renderTokens(){
+ const inventory=document.getElementById("tokenInventory");
+ const area=document.getElementById("tokenApplyArea");
+ if(!state.tokens.length){
+   inventory.className="empty";
+   inventory.textContent="No bonus tokens collected yet.";
+   area.style.display="none";
+   return;
+ }
+ inventory.className="";
+ inventory.innerHTML=state.tokens.map((t,i)=>`
+  <div class="token" style="margin-bottom:8px">
+   <label><input type="radio" name="tokenChoice" value="${i}" ${i===0?"checked":""}>
+   <b>${escapeHTML(t.name)}</b></label><div class="small muted">${escapeHTML(t.description||"Bonus token")}</div>
+  </div>`).join("");
+ area.style.display="block";
+ document.getElementById("tokenPlayer").innerHTML=state.squad.map(p=>`<option value="${p.id}">${escapeHTML(p.name)} · ${p.position}</option>`).join("");
+}
+function applySelectedToken(){
+ const chosen=document.querySelector('input[name="tokenChoice"]:checked');
+ if(!chosen)return;
+ const tokenIndex=Number(chosen.value);
+ const playerId=Number(document.getElementById("tokenPlayer").value);
+ const token=state.tokens.splice(tokenIndex,1)[0];
+ const player=state.squad.find(p=>p.id===playerId);
+ if(!player)return;
+ player.tokens=player.tokens||[];
+ player.tokens.push(token);
+ state.appliedTokens.push({token,playerId});
+ renderTactics();
+}
+
+// Future reward system can add tokens using:
+// state.tokens.push({name:"Token name",description:"Token effect"});
+// renderTokens();
+
+renderPerks();
 </script>
 </body>
 </html>
