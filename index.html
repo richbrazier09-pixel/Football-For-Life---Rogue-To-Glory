@@ -97,7 +97,7 @@ td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 <section id="tacticsScreen" class="hidden">
 <div class="panel">
 <h2>Team Tactics</h2>
-<label>Formation <select id="formation" onchange="renderTactics()">
+<label>Formation <select id="formation" onchange="resetLineup();renderTactics()">
 <option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>5-3-2</option><option>3-4-1-2</option>
 </select></label>
 <p id="tokenInventory"></p><div id="pitch"></div><div id="captainSelect"></div><div id="tacticSubs"></div>
@@ -182,6 +182,7 @@ let game=null,mapInstance=null,selectedPerk=0,match=null,pendingReward=null;
 const savedKey="ffl_rogue_glory_collection_v1";
 const randomInt=max=>Math.floor(Math.random()*max);
 const pick=a=>a[randomInt(a.length)];
+const chance=percent=>Math.random()*100<Math.max(0,Math.min(100,percent));
 
 function makePlayer(name,position,rarity="Grey",legend=false){
  return {id:"p_"+Math.random().toString(36).slice(2),name,position,rarity,legend,overall:legend?null:overall[rarity],token:null,glass:false,injured:false,goals:0,assists:0,appearances:0,training:0,ability:legend?"Unique legend ability":null,captainBonus:false};
@@ -208,7 +209,7 @@ function selectPerk(i){if(perks[i]){selectedPerk=i;renderPerks();}}
 /* INITIALISATION */
 function startRun(){
  try{
-  game={perk:perks[selectedPerk][0],squad:[],captain:null,week:0,fixtureIndex:0,fixtures:[],results:[],trainingDone:false,secondTraining:false,cup:makeCup(),achievements:[],tokensEarned:[],teams:[],table:[],rewardCount:0};
+  game={perk:perks[selectedPerk][0],squad:[],captain:null,week:0,fixtureIndex:0,fixtures:[],results:[],trainingDone:false,secondTraining:false,cup:makeCup(),achievements:[],tokensEarned:[],teams:[],table:[],rewardCount:0,lineup:null};
   game.squad.push(randomPlayer("GK"));
   outfieldPositions.forEach(pos=>game.squad.push(randomPlayer(pos)));
   readCollection().forEach(card=>{if(game.squad.length<18)game.squad.push({...card,id:"saved_"+Math.random().toString(36).slice(2),goals:0,assists:0,appearances:0,training:0,injured:false});});
@@ -263,7 +264,7 @@ function initMap(){
 
 /* TRAINING */
 function renderTraining(){
- $("trainingInfo").innerHTML=`<p>Training sessions used: ${game.week}</p><p>${game.perk==="Training Specialist"?"Two sessions available each week.":"One session available each week."}</p><p>Every player rolls two hidden d10 dice. The higher roll is displayed. A result of 8 or higher gives +1 overall.</p>`;
+ $("trainingInfo").innerHTML=`<p>Training sessions used this week: ${game.trainingDone?(game.secondTraining?2:1):0}</p><p>${game.perk==="Training Specialist"?"Two sessions available each week.":"One session available each week."}</p><p>Every player rolls two hidden training dice. The higher result is shown. A result of 8 or higher gives +1 overall.</p>`;
 }
 function train(){
  const allowed=!game.trainingDone||(game.perk==="Training Specialist"&&!game.secondTraining);
@@ -275,8 +276,7 @@ function train(){
   reports.push({name:p.name,score,improved:score>=8});
  });
  if(!game.trainingDone)game.trainingDone=true;else game.secondTraining=true;
- game.week++;
- $("trainingInfo").innerHTML=`<h3>Training ratings</h3><table><tr><th>Player</th><th>Rating</th><th>Result</th></tr>${reports.map(r=>`<tr><td>${r.name}</td><td>${r.score}/10</td><td>${r.improved?"+1 Overall":"No increase"}</td></tr>`).join("")}</table>`;
+ $("trainingInfo").innerHTML=`<h3>Training results</h3><table><tr><th>Player</th><th>Training</th><th>Result</th></tr>${reports.map(r=>`<tr><td>${r.name}</td><td>${r.score}/10</td><td>${r.improved?"+1 Overall":"No increase"}</td></tr>`).join("")}</table>`;
 }
 
 /* FIXTURES AND TABLE */
@@ -285,6 +285,9 @@ function renderFixtures(){
   const home=f.home?"Football For Life":f.op,away=f.home?f.op:"Football For Life";
   return `<div class="row panel"><b>${i+1}.</b><span>${home} vs ${away}</span><span class="badge">${f.played?"Played":"Upcoming"}</span>${f.played?`<span>${f.score}</span>`:""}${i===game.fixtureIndex&&!f.played?'<button class="primary" onclick="beginLeagueMatch()">Play Next Match</button>':""}</div>`;
  }).join("");
+ if([8,16,24,30].includes(game.fixtureIndex)&&!game.cup.eliminated&&!game.cup.champion){
+  $("fixturesList").innerHTML+=`<div class="panel"><h3>Cup fixture due</h3><button class="primary" onclick="playNextCup()">Play Cup Match</button></div>`;
+ }
 }
 function renderTable(){
  const sorted=game.table.slice().sort((a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga));
@@ -292,7 +295,7 @@ function renderTable(){
  $("cupList").innerHTML=game.cup.history.map(x=>`<p>${x}</p>`).join("")+`<p>Current cup round: ${game.cup.round+1}</p><p>${game.cup.eliminated?"Eliminated":game.cup.champion?"Cup winners":"Still competing"}</p>`;
 }
 
-/* FORMATIONS */
+/* FORMATIONS AND LINE-UP ASSIGNMENTS */
 const formationDefinitions={
  "4-4-2":[["ST","ST"],["LM","CM","CM","RM"],["LB","CB","CB","RB"],["GK"]],
  "4-3-3":[["LW","ST","RW"],["CM","CM","CM"],["LB","CB","CB","RB"],["GK"]],
@@ -305,34 +308,47 @@ function eligibleForRole(p,role){
  const accepted={ST:["ST"],LW:["LW","LM"],RW:["RW","RM"],LM:["LM","LW"],RM:["RM","RW"],CAM:["CAM"],CM:["CM","CDM","CAM"],CDM:["CDM","CM"],LB:["LB","LWB"],RB:["RB","RWB"],LWB:["LWB","LB","LM"],RWB:["RWB","RB","RM"],CB:["CB"]};
  return (accepted[role]||[role]).includes(p.position);
 }
+function resetLineup(){game.lineup=null;}
 function getFormationSlots(){
- const rows=formationDefinitions[$("formation").value]||formationDefinitions["4-4-2"],available=game.squad.filter(p=>!p.injured),used=new Set();
+ const rows=formationDefinitions[$("formation").value]||formationDefinitions["4-4-2"];
+ const available=game.squad.filter(p=>!p.injured);
+ if(!game.lineup){
+  const used=new Set();
+  game.lineup=rows.flatMap(row=>row.map(role=>{
+   let p=available.find(x=>!used.has(x.id)&&eligibleForRole(x,role));
+   if(!p)p=available.find(x=>!used.has(x.id)&&(role==="GK"?x.position==="GK":x.position!=="GK"));
+   if(p)used.add(p.id);
+   return p?.id||null;
+  }));
+ }
+ let index=0;
  return rows.map(row=>row.map(role=>{
-  let p=available.find(x=>!used.has(x.id)&&eligibleForRole(x,role));
-  if(!p)p=available.find(x=>!used.has(x.id)&&(role==="GK"?x.position==="GK":x.position!=="GK"));
-  if(p)used.add(p.id);return {role,player:p};
+  const id=game.lineup[index++],p=available.find(x=>x.id===id);
+  return {role,player:p||null};
  }));
 }
 function renderTactics(){
  if(!game)return;
  const rows=getFormationSlots();
- $("pitch").innerHTML=rows.map(row=>`<div class="pitchline">${row.map(slot=>{
-  const p=slot.player;if(!p)return `<div class="pitchplayer">${slot.role}<br>Empty</div>`;
+ $("pitch").innerHTML=rows.map((row,r)=>`<div class="pitchline">${row.map((slot,c)=>{
+  const p=slot.player,flatIndex=rows.slice(0,r).reduce((n,x)=>n+x.length,0)+c;
+  if(!p)return `<div class="pitchplayer">${slot.role}<br>Empty</div>`;
   const choices=game.squad.filter(x=>!x.injured&&x.id!==p.id&&(slot.role==="GK"?x.position==="GK":x.position!=="GK"));
-  return `<div class="pitchplayer"><b>${slot.role}</b><br>${p.id===game.captain?"© ":""}${p.name}<br>${p.overall??"Legend"} OVR<select onchange="changeFormationPlayer('${p.id}',this.value,'${slot.role}')"><option value="">Change player…</option>${choices.map(x=>`<option value="${x.id}">${x.name} (${x.position})</option>`).join("")}</select></div>`;
+  return `<div class="pitchplayer"><b>${slot.role}</b><br>${p.id===game.captain?"© ":""}${p.name}<br>${p.overall??"Legend"} OVR<select onchange="changeFormationPlayer(${flatIndex},this.value)"><option value="">Change player…</option>${choices.map(x=>`<option value="${x.id}">${x.name} (${x.position})</option>`).join("")}</select></div>`;
  }).join("")}</div>`).join("");
  $("tokenInventory").textContent="Token inventory: "+(game.tokensEarned.join(", ")||"None yet");
  const out=game.squad.filter(p=>p.position!=="GK");
  $("captainSelect").innerHTML=`<p>Captain: <select onchange="setCaptain(this.value)">${out.map(p=>`<option value="${p.id}" ${p.id===game.captain?"selected":""}>${p.name}</option>`).join("")}</select></p>`;
  $("tacticSubs").innerHTML="<h3>Squad and substitutes</h3>"+game.squad.map(p=>`<span class="badge">${p.name} (${p.position})${p.id===game.captain?" ©":""}</span>`).join("");
 }
-function changeFormationPlayer(oldId,newId,role){
+function changeFormationPlayer(slotIndex,newId){
  if(!newId)return;
- const old=game.squad.find(p=>p.id===oldId),next=game.squad.find(p=>p.id===newId);
+ const oldId=game.lineup[slotIndex],old=game.squad.find(p=>p.id===oldId),next=game.squad.find(p=>p.id===newId);
  if(!old||!next)return;
- if(role==="GK"&&(old.position!=="GK"||next.position!=="GK")){alert("Only goalkeepers can play in goal.");renderTactics();return;}
- if(role!=="GK"&&(old.position==="GK"||next.position==="GK")){alert("Goalkeepers can only play in goal.");renderTactics();return;}
- [old.position,next.position]=[next.position,old.position];
+ if((old.position==="GK")!==(next.position==="GK")){alert("Goalkeepers can only play in goal.");return;}
+ const otherIndex=game.lineup.indexOf(newId);
+ game.lineup[slotIndex]=newId;
+ if(otherIndex>=0)game.lineup[otherIndex]=oldId;
  renderTactics();
 }
 function setCaptain(id){game.captain=id;renderTactics();}
@@ -346,14 +362,12 @@ function renderAchievements(){
  const names=["Golden Boot","Unbeaten Season","League Champion","Cup Champion","Recruit a Legend"];
  $("achievementList").innerHTML=names.map(n=>`<p>${game.achievements.includes(n)?"🏆":"🔒"} ${n}</p>`).join("");
 }
-
-/* THE IMPORTANT CENTRAL RENDER FUNCTION */
 function renderAll(){
  if(!game)return;
  renderTraining();renderFixtures();renderTable();renderTactics();renderSquad();renderStats();renderAchievements();
 }
 
-/* MATCH ENGINE — BOTH TEAMS ATTACK */
+/* MATCH ENGINE */
 function getStartingXI(){
  const starters=[];getFormationSlots().forEach(row=>row.forEach(slot=>{if(slot.player&&!starters.some(p=>p.id===slot.player.id))starters.push(slot.player);}));
  return starters;
@@ -403,7 +417,13 @@ function rating(p,attribute,side){
  if(side==="user"&&game.perk==="Home Advantage"&&match.home)value+=1;
  return Math.max(1,Math.min(100,value));
 }
-function rollCheck(value){const roll=1+randomInt(100);return {roll,success:roll>value};}
+
+/* A direct percentage check: an 80-rated shooter has an 80% chance.
+   No dice are displayed. The goalkeeper does not reverse the shooter's rating. */
+function scoringCheck(player,attribute,side){
+ const effectiveRating=rating(player,attribute,side);
+ return {chance:effectiveRating,scored:chance(effectiveRating)};
+}
 function nextChance(){
  if(match.eventIndex>=match.schedule.length){finishMatch();return;}
  match.minute=Math.min(90,Math.round(1+89*match.eventIndex/Math.max(1,match.schedule.length-1)));
@@ -426,10 +446,9 @@ function resolveChance(){
  const side=event.side,userAttack=side==="user";
  const attacker=userAttack?game.squad.find(p=>p.id===$("actionPlayer").value):event.attacker;
  if(!attacker)return;
- const defendingSide=userAttack?"opponent":"user",keeper=chooseKeeper(defendingSide),s=event.situation;
- const attackRating=rating(attacker,s.attribute,side),attack=rollCheck(attackRating);
- const keeperRating=rating(keeper,"Shot Stopping",defendingSide),keeperRoll=1+randomInt(100);
- let text="",goal=false,shot=false,saved=false,missed=false;
+ const s=event.situation;
+ let text="",goal=false,saved=false,missed=false,broken=false,scoringAttribute="Shooting";
+ let shooter=attacker;
 
  const scoreLine=()=>`Football For Life ${match.userGoals} – ${match.opponentGoals} ${match.opponent.name}`;
  const scoreGoal=()=>{
@@ -437,51 +456,67 @@ function resolveChance(){
   if(userAttack){match.userGoals++;attacker.goals++;}
   else{match.opponentGoals++;attacker.goals++;}
  };
+ const attemptShot=(player,attribute)=>{
+  scoringAttribute=attribute;
+  const result=scoringCheck(player,attribute,side);
+  if(result.scored){scoreGoal();return {goal:true,chance:result.chance};}
+  return {goal:false,chance:result.chance};
+ };
 
  if(s.type==="penalty"){
-  text=`${attacker.name} places the ball on the spot. The referee blows the whistle.`;
-  if(!attack.success){missed=true;text+=" The kick is struck wide! A goal kick follows.";}
-  else if(keeperRoll>keeperRating){saved=true;text+=` ${keeper.name} guesses correctly and pushes the penalty away!`;}
-  else{scoreGoal();text+=` GOAL! ${attacker.name} sends the penalty beyond the goalkeeper.`;}
+  text=`${attacker.name} places the ball on the spot. The referee checks that everyone is ready. The whistle goes.`;
+  const result=attemptShot(attacker,"Shooting");
+  if(result.goal)text+=` GOAL! ${attacker.name} sends the penalty into the net.`;
+  else{missed=true;text+=` ${attacker.name} strikes it wide. The goalkeeper prepares for the goal kick.`;}
  }
  else if(["corner","cross","header"].includes(s.type)){
-  text=s.type==="corner"?"The corner is delivered into the six-yard area.":s.type==="cross"?"The cross is whipped towards the penalty spot.":"The ball is floated towards the forward.";
-  if(!attack.success){text+=" The delivery is overhit and drifts beyond everyone. The defence clears.";missed=true;}
+  text=s.type==="corner"?"The corner is delivered into the six-yard area.":s.type==="cross"?"The winger gets to the byline and whips a cross towards the penalty spot.":"A high ball is floated towards the forward.";
+  if(!chance(rating(attacker,s.attribute,side))){missed=true;text+=" The delivery is overhit and drifts beyond everyone. The defence clears.";}
   else{
-   const target=chooseOutfield(side),head=rollCheck(rating(target,"Heading",side));
-   text+=` ${target.name} attacks the ball in the air.`;
-   if(!head.success){missed=true;text+=" The header flies over the crossbar.";}
-   else if(keeperRoll>keeperRating){saved=true;text+=` ${keeper.name} reacts sharply and saves the header.`;}
-   else{scoreGoal();text+=` GOAL! ${target.name} powers a header into the net!`;}
+   shooter=chooseOutfield(side);
+   text+=` ${shooter.name} rises to meet it.`;
+   const result=attemptShot(shooter,"Heading");
+   if(result.goal)text+=` GOAL! ${shooter.name} powers a header into the net!`;
+   else{missed=true;text+=` The header flies over the crossbar.`;}
   }
  }
- else if(s.type==="freekick"||s.type==="longshot"){
-  text=s.type==="freekick"?`${attacker.name} stands over the free kick and curls a shot towards goal.`:`${attacker.name} strikes from distance.`;
-  if(!attack.success){missed=true;text+=" The effort sails over the bar.";}
-  else if(keeperRoll>keeperRating){saved=true;text+=` ${keeper.name} dives across goal and makes the save.`;}
-  else{scoreGoal();text+=` GOAL! A superb strike from ${attacker.name}!`;}
+ else if(s.type==="freekick"){
+  text=`${attacker.name} stands over the free kick and curls a shot towards goal.`;
+  const result=attemptShot(attacker,"Set Pieces");
+  if(result.goal)text+=` GOAL! A superb free kick from ${attacker.name}!`;
+  else{missed=true;text+=" The effort bends wide of the post.";}
+ }
+ else if(s.type==="longshot"){
+  text=`${attacker.name} finds space outside the area and strikes from distance.`;
+  const result=attemptShot(attacker,"Shooting");
+  if(result.goal)text+=` GOAL! A brilliant long-range strike from ${attacker.name}!`;
+  else{missed=true;text+=" The shot whistles past the post.";}
  }
  else if(s.type==="oneonone"){
-  text=`${attacker.name} races through on goal.`;
-  if(!attack.success){missed=true;text+=" The touch gets away from the forward and the chance is gone.";}
-  else if(keeperRoll>keeperRating){saved=true;text+=` ${keeper.name} spreads themselves and makes a crucial save.`;}
-  else{scoreGoal();text+=` GOAL! ${attacker.name} keeps their composure and slots it home!`;}
+  text=`${attacker.name} breaks through the defensive line and races towards goal.`;
+  const result=attemptShot(attacker,"Shooting");
+  if(result.goal)text+=` GOAL! ${attacker.name} keeps their composure and slots it home!`;
+  else{missed=true;text+=` The finish goes wide. The goalkeeper can breathe again.`;}
  }
  else{
-  text=`${attacker.name} tries to make something happen.`;
-  if(!attack.success){text+=` ${event.defender.name} reads the move and wins possession.`;}
-  else{
-   shot=true;
-   const finish=rollCheck(rating(attacker,"Shooting",side));
-   if(!finish.success){missed=true;text+=` ${attacker.name} gets the shot away, but it flashes wide.`;}
-   else if(keeperRoll>keeperRating){saved=true;text+=` ${keeper.name} gets down quickly and turns the effort away.`;}
-   else{scoreGoal();text+=` GOAL! ${attacker.name} finishes the move with a composed strike!`;}
+  text=`${attacker.name} tries to make something happen in the final third.`;
+  const creationChance=rating(attacker,s.attribute,side);
+  if(!chance(creationChance)){
+   broken=true;text+=` ${event.defender.name} reads the move and wins possession.`;
+  }else{
+   text+=` ${attacker.name} creates a shooting opportunity.`;
+   const result=attemptShot(attacker,"Shooting");
+   if(result.goal)text+=` GOAL! ${attacker.name} finishes the move with a composed strike!`;
+   else{missed=true;text+=" The shot flashes wide of the goal.";}
   }
  }
+
  if(goal)text+=`<br><strong>${scoreLine()}</strong>`;
  else text+=`<br>${scoreLine()}`;
- const outcome=goal?"GOAL":saved?"SAVED":missed?"MISSED":"ATTACK BROKEN DOWN";
- $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}' · ${outcome}</div>${text}<p class="small">${attacker.name}: ${s.attribute} ${attackRating}, roll ${attack.roll}. ${attack.success?"Action successful.":"Action unsuccessful."} ${keeper.name}: Shot Stopping ${keeperRating}, roll ${keeperRoll}.</p>`;
+
+ const outcome=goal?"GOAL":saved?"SAVED":missed?"MISSED":broken?"ATTACK BROKEN DOWN":"CHANCE";
+ const chanceText=goal||missed?`<p class="small">${shooter.name}: ${scoringAttribute} rating ${rating(shooter,scoringAttribute,side)} — ${rating(shooter,scoringAttribute,side)}% scoring probability for that shot.</p>`:"";
+ $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}' · ${outcome}</div>${text}${chanceText}`;
  $("score").textContent=`${match.userGoals} - ${match.opponentGoals}`;
  match.eventIndex++;
  $("chanceControls").innerHTML='<button class="primary" onclick="nextChance()">Continue match</button>';
@@ -584,7 +619,7 @@ function playNextCup(){
  const pair=game.cup.rounds[game.cup.round]?.find(p=>p.includes("Football For Life"));
  if(!pair){alert("Cup fixture unavailable.");return;}
  const name=pair.find(n=>n!=="Football For Life"),opponent=game.teams.find(t=>t.name===name)||{name,squad:makeAISquad()};
- beginMatch({type:"cup",opponent,home:true});
+ beginMatch({type:"cup",opponent,home:true,op:name});
 }
 function cupVictory(){
  const token=pick(tokens),eligible=game.squad.filter(p=>!p.token);
@@ -614,14 +649,6 @@ function keepCard(index){
  const collection=readCollection();collection.push({...p,accountBound:true});saveCollection(collection);
  $("keepChoices").innerHTML="<h3>Card saved to this browser's collection.</h3>";
  $("collection").innerHTML=`<h3>Permanent collection (${collection.length})</h3>`+collection.map(c=>cardHTML(c)).join("");
-}
-
-/* CUP BUTTON ON FIXTURES */
-function renderFixturesWithCup(){
- renderFixtures();
- if([8,16,24,30].includes(game.fixtureIndex)&&!game.cup.eliminated){
-  $("fixturesList").innerHTML+=`<div class="panel"><h3>Cup fixture due</h3><button class="primary" onclick="playNextCup()">Play Cup Match</button></div>`;
- }
 }
 
 /* ERROR HANDLING AND STARTUP */
