@@ -1523,7 +1523,20 @@ function keepCard(index){
   `<h3>Permanent collection (${collection.length})</h3>`+
   collection.map(card=>cardHTML(card)).join("");
 }
+/* -------------------------------------------------------
+   RENDER ALL GAME SCREENS
+------------------------------------------------------- */
+function renderAll(){
+ if(!game) return;
 
+ renderTraining();
+ renderFixtures();
+ renderTable();
+ renderTactics();
+ renderSquad();
+ renderStats();
+ renderAchievements();
+}
 /* -------------------------------------------------------
    STARTUP
 ------------------------------------------------------- */
