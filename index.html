@@ -10,13 +10,13 @@
 :root{--bg:#10151d;--panel:#1c2633;--panel2:#263446;--gold:#f3c65e;--green:#58c78b;--muted:#aab6c5;--line:#39485b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:#f4f6f8;font-family:Arial,sans-serif}
 header{background:#0a1018;padding:16px;text-align:center;border-bottom:2px solid var(--gold)}
-h1{font-size:clamp(20px,4vw,32px);margin:0;color:var(--gold)}h2{margin:5px 0 14px}h3{margin:8px 0}
+h1{font-size:clamp(20px,4vw,32px);margin:0;color:var(--gold)}
 main{max-width:1200px;margin:auto;padding:14px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
-button,select{background:var(--panel2);color:white;border:1px solid #52657d;padding:10px 13px;border-radius:8px;cursor:pointer;margin:3px}
+h2{margin:5px 0 14px}button,select{background:var(--panel2);color:white;border:1px solid #52657d;padding:10px 13px;border-radius:8px;cursor:pointer;margin:3px}
 button:hover{border-color:var(--gold)}button:disabled{opacity:.4;cursor:not-allowed}
 .primary{background:#72551c;border-color:var(--gold)}.danger{background:#632f35}
 nav{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;background:#131d29;padding:8px;position:sticky;top:0;z-index:5}
-nav button{flex:1;min-width:90px}.hidden{display:none!important}
+nav button{flex:1;min-width:85px}.hidden{display:none!important}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
 .card{padding:12px;border-radius:10px;border:2px solid #687384;background:linear-gradient(145deg,#4c5664,#202a36);min-height:130px}
 .card.grey{border-color:#aab3bd;background:linear-gradient(145deg,#626b75,#252c35)}
@@ -27,21 +27,17 @@ nav button{flex:1;min-width:90px}.hidden{display:none!important}
 .card.legend{border-color:#ddd;background:linear-gradient(145deg,#292929,#050505);box-shadow:0 0 12px #aaa}
 .card.glass{box-shadow:0 0 15px #b9eaff;opacity:.9}
 .card strong{font-size:18px}.small{font-size:12px;color:var(--muted)}
-.stat{display:inline-block;background:#101923;padding:5px 8px;border-radius:6px;margin:3px}
-#map{height:480px;border-radius:10px;background:#263446}
+#map{height:460px;border-radius:10px;background:#263446}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.slot{background:#172332;border:1px solid var(--line);border-radius:8px;padding:8px;margin:5px;min-width:120px}
-.slot select{width:100%;max-width:180px}
-.bar{height:8px;background:#111;border-radius:9px;overflow:hidden}.bar span{display:block;height:100%;background:var(--green)}
-#commentary{background:#0c131c;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:90px;line-height:1.5}
-.highlight{font-size:18px;color:var(--gold);font-weight:bold}
-table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 .badge{display:inline-block;border-radius:20px;padding:3px 8px;background:#34465b;font-size:12px}
-#pitch{background:linear-gradient(#176a43,#125235);border:3px solid #d4e8d9;border-radius:12px;padding:15px;min-height:360px}
-.pitchline{display:flex;justify-content:space-around;gap:5px;margin:16px 0;flex-wrap:wrap}
-.pitchplayer{background:#e7f2e9;color:#12291d;padding:8px;border-radius:8px;text-align:center;min-width:80px;font-size:12px}
-.pitchplayer button{color:white}
-@media(max-width:600px){main{padding:7px}#map{height:390px}table{font-size:12px}.slot{min-width:95px}}
+table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+#pitch{background:linear-gradient(#176a43,#125235);border:3px solid #d4e8d9;border-radius:12px;padding:12px;min-height:350px}
+.pitchline{display:flex;justify-content:space-around;gap:6px;margin:12px 0;flex-wrap:wrap}
+.pitchplayer{background:#e7f2e9;color:#12291d;padding:8px;border-radius:8px;text-align:center;min-width:90px;font-size:12px;max-width:150px}
+.pitchplayer select{width:100%;max-width:130px;color:white}
+#commentary{background:#0c131c;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:100px;line-height:1.5}
+.highlight{font-size:18px;color:var(--gold);font-weight:bold}
+@media(max-width:600px){main{padding:7px}#map{height:380px}table{font-size:12px}.pitchplayer{min-width:75px;padding:5px}}
 </style>
 </head>
 <body>
@@ -66,31 +62,22 @@ table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:8px;borde
 <div id="perks" class="grid"></div>
 <button class="primary" onclick="startRun()">Start Run</button>
 </section>
-
-<section id="mapScreen" class="hidden">
-<div class="panel"><h2>Football For Life — Ellesmere Port</h2><div id="map"></div><p class="small">Club locations are shown using town-centre positions. Map tiles © OpenStreetMap contributors.</p></div>
-</section>
-<section id="trainingScreen" class="hidden">
-<div class="panel"><h2>Weekly Training</h2><p>Every player rolls two hidden d10 dice. The higher result is their training rating. A rating of 8 or more gives +1 overall.</p>
-<div id="trainingInfo"></div><button class="primary" onclick="train()">Simulate Training</button></div>
-</section>
+<section id="mapScreen" class="hidden"><div class="panel"><h2>Football For Life — Ellesmere Port</h2><div id="map"></div><p class="small">Town-centre positions. Map tiles © OpenStreetMap contributors.</p></div></section>
+<section id="trainingScreen" class="hidden"><div class="panel"><h2>Weekly Training</h2><div id="trainingInfo"></div><button class="primary" onclick="train()">Simulate Training</button></div></section>
 <section id="fixturesScreen" class="hidden"><div class="panel"><h2>Season Fixtures</h2><div id="fixturesList"></div></div></section>
-<section id="tableScreen" class="hidden"><div class="panel"><h2>League Table</h2><div id="tableList"></div></div><div class="panel"><h3>Cup Competition</h3><div id="cupList"></div></div></section>
+<section id="tableScreen" class="hidden"><div class="panel"><h2>League Table</h2><div id="tableList"></div><div class="panel"><h3>Cup Competition</h3><div id="cupList"></div></div></div></section>
 <section id="tacticsScreen" class="hidden"><div class="panel"><h2>Team Tactics</h2>
-<label>Formation <select id="formation" onchange="renderTactics()">
-<option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>5-3-2</option><option>3-4-1-2</option>
-</select></label>
+<label>Formation <select id="formation" onchange="renderTactics()"><option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option><option>5-3-2</option><option>3-4-1-2</option></select></label>
 <p id="tokenInventory"></p><div id="pitch"></div><div id="captainSelect"></div><div id="tacticSubs"></div></div></section>
-<section id="squadScreen" class="hidden"><div class="panel"><h2>Squad Cards</h2><div id="squadList"></div></div></section>
+<section id="squadScreen" class="hidden"><div class="panel"><h2>Squad Cards</h2><div id="squadList" class="grid"></div></div></section>
 <section id="statsScreen" class="hidden"><div class="panel"><h2>Player Statistics</h2><div id="playerStats"></div></div></section>
 <section id="achievementsScreen" class="hidden"><div class="panel"><h2>Achievements</h2><div id="achievementList"></div></div></section>
 <section id="matchScreen" class="hidden"><div class="panel">
 <h2 id="matchTitle">Match</h2><div class="row"><span class="badge" id="matchMinute">Minute 1</span><span class="badge" id="score">0 - 0</span><span class="badge" id="possession"></span></div>
 <div id="commentary"></div><div id="chanceControls" class="panel"></div>
-<button onclick="finishMatchEarly()" id="finishButton" class="danger">End Match (testing)</button>
 </div></section>
 <section id="rewardScreen" class="hidden"><div class="panel"><h2 id="rewardTitle">Choose your reward</h2><div id="rewardChoices" class="grid"></div><div id="rewardExtra"></div></div></section>
-<section id="endScreen" class="hidden"><div class="panel"><h2>Run Complete</h2><p>Choose one card from your squad to keep permanently. Any token attached to it stays with it.</p><div id="keepChoices" class="grid"></div><div id="collection"></div><button onclick="location.reload()">Return to Start</button></div></section>
+<section id="endScreen" class="hidden"><div class="panel"><h2>Run Complete</h2><p>Choose one card from your squad to keep permanently.</p><div id="keepChoices" class="grid"></div><div id="collection"></div><button onclick="location.reload()">Return to Start</button></div></section>
 </main>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
@@ -108,7 +95,7 @@ const perks=[
 ["Captain My Captain","Your captain gains bonus stats"],
 ["High Roller","Reroll every cup match reward once"],
 ["Training Specialist","Train twice a week"],
-["Lucky Scout","Double higher-rarity odds for your first three league rewards"]
+["Lucky Scout","Double higher-rarity odds for first three league rewards"]
 ];
 const firstNames=["Rich","Jack","Harry","Oliver","Noah","Charlie","Theo","James","Leo","Alfie","Mason","Ethan","Lucas","Finley","Max","Oscar","Freddie","Archie"];
 const lastNames=["Brazier","Smith","Jones","Taylor","Davies","Wilson","Brown","Evans","Thomas","Roberts","Walker","White","Green","Hall","Wood","Clarke"];
@@ -129,149 +116,185 @@ function cardHTML(p,extra=""){
  return `<div class="card ${rarityClass(p)} ${p.glass?"glass":""}"><strong>${p.legend?"♛ "+p.name:p.name}</strong><div>${p.position} · ${p.legend?"LEGEND":p.rarity+" · "+p.overall+" OVR"}</div>${p.token?`<div class="badge">${p.token} +10</div>`:""}${p.glass?'<div class="small">GLASS CARD — 10% break chance per appearance</div>':""}<div class="small">${p.ability||""}</div>${extra}</div>`;
 }
 function startRun(){
- if(!game)return;
+ game={};
  game.perk=perks[selectedPerk][0];
- game.squad=[];
- game.squad.push(randomPlayer("GK"));
- const out=["CB","CB","LB","RB","CM","CM","CDM","CAM","LW","RW","ST","ST","LM"];
- out.forEach(p=>game.squad.push(randomPlayer(p)));
+ game.squad=[randomPlayer("GK"),...["CB","CB","LB","RB","CM","CM","CDM","CAM","LW","RW","ST","ST","LM"].map(p=>randomPlayer(p))];
  game.squad.push(...saved().map(x=>({...x,id:crypto.randomUUID(),goals:0,assists:0,appearances:0})));
  game.squad=game.squad.slice(0,18);
  game.captain=game.squad.find(p=>p.position!=="GK")?.id;
- if(game.perk==="Captain My Captain")game.squad.find(p=>p.id===game.captain).captainBonus=true;
+ if(game.perk==="Captain My Captain"){const c=game.squad.find(p=>p.id===game.captain);if(c)c.captainBonus=true}
  game.week=0;game.fixtureIndex=0;game.results=[];game.trainingDone=false;game.secondTraining=false;
- game.cup=makeCup();game.achievements=[];game.tokensEarned=[];game.topScorer=null;
+ game.cup=makeCup();game.achievements=[];game.tokensEarned=[];
  game.teams=clubs.slice(1).map(name=>({name,squad:makeAISquad(),points:0,w:0,d:0,l:0,gf:0,ga:0}));
  game.table=[{name:"Football For Life",points:0,w:0,d:0,l:0,gf:0,ga:0},...game.teams];
  game.fixtures=makeFixtures();
  $("start").classList.add("hidden");$("nav").classList.remove("hidden");
- show("map");renderAll();
+ renderAll();show("map");
 }
 function makeAISquad(){
- const s=[randomPlayer("GK")];
- for(let i=0;i<13;i++)s.push(randomPlayer(pick(["CB","LB","RB","CM","CDM","CAM","LW","RW","ST"])));
- return s;
+ return [randomPlayer("GK"),...Array.from({length:13},(_,i)=>randomPlayer(["CB","CB","LB","RB","CM","CM","CDM","CAM","LW","RW","ST","ST","RM"][i]))];
 }
 function makeFixtures(){
- let a=clubs.slice(1).sort(()=>Math.random()-.5);
- return a.map((op,i)=>({op,home:i%2===0,played:false})).concat(a.map((op,i)=>({op,home:i%2!==0,played:false})));
-}
-function makeCup(){
- let a=clubs.slice().sort(()=>Math.random()-.5),round=[];
- for(let i=0;i<16;i+=2)round.push([a[i],a[i+1]]);
- return {rounds:[round],round:0,eliminated:false,champion:null,history:[]};
+ const opponents=clubs.slice(1).sort(()=>Math.random()-.5);
+ return opponents.map((op,i)=>({op,home:i%2===0,played:false})).concat(opponents.map((op,i)=>({op,home:i%2!==0,played:false})));
 }
 function show(name){
  document.querySelectorAll("main>section").forEach(s=>s.classList.add("hidden"));
  const el=$(name+"Screen");if(el)el.classList.remove("hidden");
- if(name==="map")initMap();
- if(name==="training")renderTraining();
- if(name==="fixtures")renderFixtures();
- if(name==="table")renderTable();
- if(name==="tactics")renderTactics();
- if(name==="squad")renderSquad();
- if(name==="stats")renderStats();
- if(name==="achievements")renderAchievements();
+ if(name==="map")initMap();if(name==="training")renderTraining();if(name==="fixtures")renderFixtures();if(name==="table")renderTable();if(name==="tactics")renderTactics();if(name==="squad")renderSquad();if(name==="stats")renderStats();if(name==="achievements")renderAchievements();
 }
 function initMap(){
  if(!window.L)return;
- if(!map){map=L.map("map");L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"}).addTo(map);
- places.forEach((p,i)=>L.marker([p[2],p[3]]).addTo(map).bindPopup(`<b>${p[0]}</b><br>${p[1]}${i===0?"<br>Home: C of E College":""}`));
- map.fitBounds(places.map(p=>[p[2],p[3]]),{padding:[20,20]});
- }setTimeout(()=>map.invalidateSize(),100);
+ if(!map){map=L.map("map");L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"}).addTo(map);places.forEach((p,i)=>L.marker([p[2],p[3]]).addTo(map).bindPopup(`<b>${p[0]}</b><br>${p[1]}${i===0?"<br>Home: C of E College":""}`));map.fitBounds(places.map(p=>[p[2],p[3]]),{padding:[20,20]})}
+ setTimeout(()=>map.invalidateSize(),100);
 }
 function renderAll(){renderFixtures();renderTable();renderSquad();renderTactics();renderAchievements()}
-function renderTraining(){
- $("trainingInfo").innerHTML=`Training sessions completed: ${game.week} · Perk: ${game.perk}<br>Players in squad: ${game.squad.length}<br>${game.perk==="Training Specialist"?"You can train twice per week.":"One training session per week."}`;
-}
+function renderTraining(){$("trainingInfo").innerHTML=`Sessions completed: ${game.week}<br>${game.perk==="Training Specialist"?"Two sessions available each week.":"One session available each week."}<br>Every player rolls two hidden d10 dice; the higher result is shown after training.`}
 function train(){
- if(game.trainingDone&&!(game.perk==="Training Specialist"&&!game.secondTraining)){alert("No training session available right now.");return}
+ if(game.trainingDone&&!(game.perk==="Training Specialist"&&!game.secondTraining)){alert("No training session available.");return}
  const reports=[];
- game.squad.forEach(p=>{
-  const a=1+rand(10),b=1+rand(10),score=Math.max(a,b);
-  p.training=score;
-  if(score>=8&&!p.legend)p.overall=Math.min(100,p.overall+1);
-  reports.push({name:p.name,score,improved:score>=8});
- });
+ game.squad.forEach(p=>{const score=Math.max(1+rand(10),1+rand(10));p.training=score;if(score>=8&&!p.legend)p.overall=Math.min(100,p.overall+1);reports.push({name:p.name,score,improved:score>=8})});
  if(!game.trainingDone)game.trainingDone=true;else game.secondTraining=true;
  game.week++;
- $("trainingInfo").innerHTML=`<h3>Training ratings</h3><p>Hidden dice: two d10 rolls per player; highest result counts.</p><table><tr><th>Player</th><th>Training rating</th><th>Result</th></tr>${reports.map(r=>`<tr><td>${r.name}</td><td>${r.score}/10</td><td>${r.improved?"+1 Overall":"No increase"}</td></tr>`).join("")}</table>`;
+ $("trainingInfo").innerHTML=`<h3>Training ratings</h3><table><tr><th>Player</th><th>Rating</th><th>Result</th></tr>${reports.map(r=>`<tr><td>${r.name}</td><td>${r.score}/10</td><td>${r.improved?"+1 Overall":"No increase"}</td></tr>`).join("")}</table>`;
 }
 function renderFixtures(){
- $("fixturesList").innerHTML=game.fixtures.map((f,i)=>`<div class="row panel"><b>${i+1}.</b> ${f.home?"Football For Life":" "+f.op} vs ${f.home?f.op:"Football For Life"} <span class="badge">${f.played?"Played":"Upcoming"}</span>${f.played?`<span>${f.score}</span>`:""}${i===game.fixtureIndex&&!f.played?'<button class="primary" onclick="beginLeagueMatch()">Play Next Match</button>':""}</div>`).join("")+`<button onclick="playNextCup()" ${game.fixtureIndex<8?"disabled":""}>Cup match (when round is due)</button>`;
+ $("fixturesList").innerHTML=game.fixtures.map((f,i)=>`<div class="row panel"><b>${i+1}.</b> ${f.home?"Football For Life":" "+f.op} vs ${f.home?f.op:"Football For Life"} <span class="badge">${f.played?"Played":"Upcoming"}</span>${f.played?`<span>${f.score}</span>`:""}${i===game.fixtureIndex&&!f.played?'<button class="primary" onclick="beginLeagueMatch()">Play Next Match</button>':""}</div>`).join("");
 }
 function renderTable(){
  const t=game.table.slice().sort((a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga));
  $("tableList").innerHTML=`<table><tr><th>#</th><th>Club</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GD</th><th>Pts</th></tr>${t.map((x,i)=>`<tr><td>${i+1}</td><td>${x.name}</td><td>${x.w+x.d+x.l}</td><td>${x.w}</td><td>${x.d}</td><td>${x.l}</td><td>${x.gf-x.ga}</td><td>${x.points}</td></tr>`).join("")}</table>`;
  $("cupList").innerHTML=game.cup.history.map(x=>`<p>${x}</p>`).join("")+`<p>Current cup round: ${game.cup.round+1} · ${game.cup.eliminated?"Eliminated":game.cup.champion?"Champions":"In competition"}</p>`;
 }
-function formationLines(f){
- return {"4-4-2":[2,4,4,1],"4-3-3":[3,3,4,1],"4-2-3-1":[1,3,2,4,1],"5-3-2":[2,3,5,1],"3-4-1-2":[2,1,4,3,1]}[f]||[2,4,4,1];
+function makeCup(){const a=clubs.slice().sort(()=>Math.random()-.5),round=[];for(let i=0;i<16;i+=2)round.push([a[i],a[i+1]]);return{rounds:[round],round:0,eliminated:false,champion:null,history:[]}}
+/* Formation rows are defined from the TOP of the pitch to the BOTTOM.
+   Each row requests players by their football position, not squad-list order. */
+const formationDefinitions={
+ "4-4-2":[["ST","ST"],["LW","CM","CM","RW"],["LB","CB","CB","RB"],["GK"]],
+ "4-3-3":[["LW","ST","RW"],["CM","CM","CAM"],["LB","CB","CB","RB"],["GK"]],
+ "4-2-3-1":[["ST"],["LW","CAM","RW"],["CDM","CDM"],["LB","CB","CB","RB"],["GK"]],
+ "5-3-2":[["ST","ST"],["CM","CM","CAM"],["LWB","CB","CB","CB","RWB"],["GK"]],
+ "3-4-1-2":[["ST","ST"],["CAM"],["LM","CM","CM","RM"],["CB","CB","CB"],["GK"]]
+};
+function roleMatch(p,role){
+ if(role==="GK")return p.position==="GK";
+ if(role==="LWB"||role==="RWB")return ["LB","RB","LM","RM"].includes(p.position);
+ if(role==="LW")return ["LW","LM","ST"].includes(p.position);
+ if(role==="RW")return ["RW","RM","ST"].includes(p.position);
+ if(role==="LM")return ["LM","LW","CM"].includes(p.position);
+ if(role==="RM")return ["RM","RW","CM"].includes(p.position);
+ if(role==="ST")return ["ST","LW","RW"].includes(p.position);
+ if(role==="CAM")return ["CAM","CM","ST"].includes(p.position);
+ if(role==="CDM")return ["CDM","CM","CB"].includes(p.position);
+ if(role==="CM")return ["CM","CDM","CAM","LM","RM"].includes(p.position);
+ if(role==="LB")return ["LB","LWB","CB"].includes(p.position);
+ if(role==="RB")return ["RB","RWB","CB"].includes(p.position);
+ if(role==="CB")return ["CB","LB","RB","CDM"].includes(p.position);
+ return p.position===role;
+}
+function pickStartingXI(){
+ const roles=formationDefinitions[$("formation").value],available=game.squad.filter(p=>!p.injured),used=new Set(),rows=[];
+ roles.forEach(row=>{
+  const selected=[];
+  row.forEach(role=>{
+   const p=available.find(x=>!used.has(x.id)&&roleMatch(x,role));
+   if(p){used.add(p.id);selected.push({player:p,role})}
+  });
+  rows.push({roles:row,selected});
+ });
+ return rows;
 }
 function renderTactics(){
- if(!game)return;
- const f=$("formation").value,lines=formationLines(f),out=game.squad.filter(p=>p.position!=="GK"),gk=game.squad.find(p=>p.position==="GK");
- let used=[];
- $("pitch").innerHTML=lines.map((count,li)=>`<div class="pitchline">${Array.from({length:count},(_,j)=>{
-  let p=out[(li*4+j)%out.length];used.push(p.id);
-  return `<div class="pitchplayer">${p.id===game.captain?"© ":""}${p.name}<br>${p.position}<br>${p.overall}${p.token?" · +10":""}<br><select onchange="assignPitch('${p.id}',this.value)"><option value="">Swap player…</option>${out.filter(x=>x.id!==p.id).map(x=>`<option value="${x.id}">${x.name}</option>`).join("")}</select></div>`;
- }).join("")}</div>`).join("")+`<div class="pitchline"><div class="pitchplayer">GOALKEEPER<br>${gk.name}<br>${gk.overall}</div></div>`;
- $("tokenInventory").innerHTML="Available tokens: "+(game.tokensEarned.length?game.tokensEarned.join(", "):"None yet. Cup victories award tokens.");
- $("captainSelect").innerHTML=`<p>Captain: <select onchange="setCaptain(this.value)">${out.map(p=>`<option value="${p.id}" ${p.id===game.captain?"selected":""}>${p.name}</option>`).join("")}</select></p>`;
- $("tacticSubs").innerHTML="<h3>Squad and substitutes</h3>"+game.squad.map(p=>`<span class="badge">${p.name} (${p.position})</span>`).join(" ");
+ if(!game.squad)return;
+ const rows=pickStartingXI();
+ $("pitch").innerHTML=rows.map((row,ri)=>`<div class="pitchline">${row.roles.map((role,j)=>{
+  const entry=row.selected[j],p=entry?.player;
+  if(!p)return `<div class="pitchplayer"><b>${role}</b><br><span class="small">No eligible player</span></div>`;
+  const candidates=game.squad.filter(x=>!x.injured&&(role==="GK"?x.position==="GK":x.position!=="GK"));
+  return `<div class="pitchplayer"><b>${p.id===game.captain?"© ":""}${role}</b><br>${p.name}<br>${p.overall??"Legend"} OVR<br><select onchange="replaceSlot('${p.id}',this.value,'${role}')"><option value="">Change player…</option>${candidates.filter(x=>x.id!==p.id).map(x=>`<option value="${x.id}">${x.name} (${x.position})</option>`).join("")}</select></div>`;
+ }).join("")}</div>`).join("");
+ $("tokenInventory").textContent="Token inventory: "+(game.tokensEarned.length?game.tokensEarned.join(", "):"None yet");
+ const out=game.squad.filter(p=>p.position!=="GK");
+ $("captainSelect").innerHTML=`Captain: <select onchange="setCaptain(this.value)">${out.map(p=>`<option value="${p.id}" ${p.id===game.captain?"selected":""}>${p.name}</option>`).join("")}</select>`;
+ $("tacticSubs").innerHTML="<h3>Squad / substitutes</h3>"+game.squad.map(p=>`<span class="badge">${p.name} (${p.position})${p.id===game.captain?" ©":""}</span>`).join(" ");
 }
-function assignPitch(id,other){
- if(!other)return;const a=game.squad.find(p=>p.id===id),b=game.squad.find(p=>p.id===other);
- if(a.position==="GK"||b.position==="GK"){alert("Goalkeepers can only play in goal.");return}
- const pos=a.position;a.position=b.position;b.position=pos;renderTactics();
+function replaceSlot(oldId,newId,role){
+ if(!newId)return;
+ const old=game.squad.find(p=>p.id===oldId),next=game.squad.find(p=>p.id===newId);
+ if(role==="GK"&&(next.position!=="GK")){alert("Only a goalkeeper can play in goal.");renderTactics();return}
+ if(role!=="GK"&&next.position==="GK"){alert("Goalkeepers can only play in goal.");renderTactics();return}
+ if(role==="GK"&&old.position!=="GK"){alert("That slot is reserved for a goalkeeper.");renderTactics();return}
+ if(role!=="GK"&&old.position==="GK"){alert("A goalkeeper cannot be moved into an outfield slot.");renderTactics();return}
+ const pos=old.position;old.position=next.position;next.position=pos;renderTactics();
 }
 function setCaptain(id){game.captain=id;renderTactics()}
-function renderSquad(){
- $("squadList").innerHTML=game.squad.map(p=>cardHTML(p,`<div class="small">${p.goals} goals · ${p.assists} assists · ${p.appearances} appearances</div>`)).join("");
-}
-function renderStats(){
- $("playerStats").innerHTML=`<table><tr><th>Player</th><th>Position</th><th>Goals</th><th>Assists</th><th>Apps</th><th>Overall</th></tr>${game.squad.slice().sort((a,b)=>b.goals-a.goals).map(p=>`<tr><td>${p.name}</td><td>${p.position}</td><td>${p.goals}</td><td>${p.assists}</td><td>${p.appearances}</td><td>${p.overall??"Legend"}</td></tr>`).join("")}</table>`;
-}
-function renderAchievements(){
- const names=["Golden Boot","Unbeaten Season","League Champion","Cup Champion","Recruit a Legend"];
- $("achievementList").innerHTML=names.map(n=>`<p>${game.achievements.includes(n)?"🏆":"🔒"} ${n}</p>`).join("");
+function renderSquad(){$("squadList").innerHTML=game.squad.map(p=>cardHTML(p,`<div class="small">${p.goals} goals · ${p.assists} assists · ${p.appearances} appearances</div>`)).join("")}
+function renderStats(){$("playerStats").innerHTML=`<table><tr><th>Player</th><th>Position</th><th>Goals</th><th>Assists</th><th>Apps</th><th>Overall</th></tr>${game.squad.slice().sort((a,b)=>b.goals-a.goals).map(p=>`<tr><td>${p.name}</td><td>${p.position}</td><td>${p.goals}</td><td>${p.assists}</td><td>${p.appearances}</td><td>${p.overall??"Legend"}</td></tr>`).join("")}</table>`}
+function renderAchievements(){const names=["Golden Boot","Unbeaten Season","League Champion","Cup Champion","Recruit a Legend"];$("achievementList").innerHTML=names.map(n=>`<p>${game.achievements.includes(n)?"🏆":"🔒"} ${n}</p>`).join("")}
+function getXI(){
+ const rows=pickStartingXI(),ids=[];
+ rows.forEach(r=>r.selected.forEach(x=>ids.push(x.player.id)));
+ return game.squad.filter(p=>ids.includes(p.id));
 }
 function beginLeagueMatch(){
  const f=game.fixtures[game.fixtureIndex];if(!f||f.played)return;
- if(!game.trainingDone){if(!confirm("You have not trained this week. Start the match anyway?"))return}
- const home=f.home,opp=game.teams.find(t=>t.name===f.op);
- beginMatch({type:"league",opponent:opp,home,fixture:f});
+ if(!game.trainingDone&&!confirm("You have not trained this week. Start anyway?"))return;
+ const opp=game.teams.find(t=>t.name===f.op);
+ beginMatch({type:"league",opponent:opp,home:f.home,fixture:f});
 }
 function teamStrength(squad,home=false){
  return squad.reduce((n,p)=>n+(p.overall||80)+(p.token?10:0)+(p.captainBonus&&p.id===game.captain?5:0)+(home&&game.perk==="Home Advantage"?1:0),0);
 }
 function beginMatch(meta){
  const opp=meta.opponent||{name:meta.opponentName||"Cup Opponent",squad:makeAISquad()};
- const my=teamStrength(game.squad,meta.home),their=teamStrength(opp.squad||makeAISquad());
- const advantaged=my>=their;
- const myRoll=rand(10)+1+(advantaged?rand(10)+1:0),theirRoll=rand(10)+1+(!advantaged?rand(10)+1:0);
- const chances=Math.max(1,Math.round((myRoll+theirRoll)/2));
- match={...meta,opponent:opp,minute:1,homeScore:0,awayScore:0,remaining:Math.min(12,chances),total:Math.min(12,chances),events:[],finished:false,goalScorer:null};
+ const myXI=getXI();if(myXI.length<11){alert("You need 11 eligible starters, including a goalkeeper. Check your formation and squad.");return}
+ const my=teamStrength(myXI,meta.home),their=teamStrength(opp.squad||makeAISquad());
+ const myFavoured=my>=their;
+ const myRoll=1+rand(10)+(myFavoured?1+rand(10):0);
+ const theirRoll=1+rand(10)+(!myFavoured?1+rand(10):0);
+ const chances=Math.max(2,Math.min(12,Math.round((myRoll+theirRoll)/3)));
+ match={...meta,opponent:opp,xi:myXI,minute:1,homeScore:0,awayScore:0,remaining:chances,total:chances,finished:false,appsRecorded:false,events:[],myChances:Math.ceil(chances/2)};
+ // One appearance per selected starter, recorded once at match start.
+ myXI.forEach(p=>{p.appearances++});
+ match.appsRecorded=true;
  $("matchTitle").textContent=`Football For Life vs ${opp.name}`;
  $("matchScreen").classList.remove("hidden");document.querySelectorAll("main>section:not(#matchScreen)").forEach(s=>s.classList.add("hidden"));
  $("nav").classList.add("hidden");nextChance();
 }
+const scenarios=[
+ ["Free kick","A free kick is awarded just outside the penalty area","Set Pieces","Shooting","18–30 yards"],
+ ["Corner","Your team wins a corner on the right attacking flank","Set Pieces","Heading","Corner arc"],
+ ["Corner","Your team wins a corner on the left attacking flank","Set Pieces","Heading","Corner arc"],
+ ["Through ball","A midfielder threads a pass between the centre-backs","Passing","Shooting","Inside the penalty area"],
+ ["Counter attack","Your side breaks forward after winning the ball in midfield","Speed","Shooting","30 yards from goal"],
+ ["One-on-one","Your striker runs through on goal with only the goalkeeper to beat","Dribbling","Shooting","Inside the box"],
+ ["Long-range shot","A midfielder finds space and shoots from distance","Shooting","Tackling","25 yards"],
+ ["Cross","A winger reaches the byline and sends a cross into the box","Set Pieces","Heading","Byline"],
+ ["Pressing","The opposition goalkeeper tries to play short from the back","Tackling","Passing","Defensive third"],
+ ["Wide dribble","Your winger takes on the opposing full-back near the touchline","Dribbling","Tackling","Wide channel"],
+ ["Midfield duel","A loose ball drops between two midfielders in the centre circle","Tackling","Dribbling","Centre circle"],
+ ["Cut-back","A wide player reaches the box and pulls the ball back","Passing","Shooting","Penalty spot"],
+ ["Header","A high cross drops towards your forward between the centre-backs","Heading","Tackling","Six-yard box"],
+ ["Penalty","The referee awards a penalty after a foul in the box","Shooting","Shot Stopping","Penalty spot"],
+ ["Goal kick","Your goalkeeper prepares a long goal kick towards the forwards","Passing","Heading","Own penalty area"],
+ ["Throw-in","Your side takes a throw-in deep in the attacking half","Passing","Tackling","Touchline"],
+ ["Interception","Your midfielder reads a pass and steps in to intercept","Tackling","Passing","Central midfield"],
+ ["Clearance","A defender wins a high ball and clears the danger","Heading","Heading","Penalty area"],
+ ["Keeper save","The opposition shoots from the edge of the area","Shot Stopping","Shooting","Edge of the box"],
+ ["Defensive recovery","Your defender races back to stop a forward breaking through","Speed","Dribbling","Defensive third"]
+];
+const variations=["after a patient passing move","following a quick change of direction","under pressure from two opponents","with space opening up ahead","after a deflection","following a switch of play","as the opposition pushes forward","late in a tight match","after a loose touch","following a quick one-two"];
 function scenario(){
- const situations=[
- ["Free kick","A free kick is awarded", "Set Pieces","Shooting"],
- ["Corner","Your team wins a corner", "Set Pieces","Heading"],
- ["Through ball","A midfielder spots a run in behind", "Passing","Shooting"],
- ["Counter attack","Your team breaks quickly", "Speed","Shooting"],
- ["One-on-one","Your striker is through on goal", "Dribbling","Shooting"],
- ["Long-range effort","A player tries from distance", "Shooting","Shooting"],
- ["Crossing move","A winger looks to cross into the box", "Set Pieces","Heading"],
- ["Pressing trap","The opponent tries to play out", "Tackling","Passing"],
- ["Wide dribble","A winger takes on the full-back", "Dribbling","Tackling"],
- ["Midfield duel","Both teams fight for possession", "Tackling","Dribbling"]
- ];
- const variants=["early in the half","near the touchline","in the centre channel","under pressure","after a quick switch","with space to run into","in a crowded penalty area","after a loose clearance","following a patient build-up","in stoppage-time pressure"];
- const a=pick(situations),b=pick(variants);
- return {name:a[0],description:a[1]+" "+b+".",attack:a[2],defend:a[3],distance:a[0]==="Free kick"?pick([18,21,24,27,30]):null};
+ const base=pick(scenarios),variation=pick(variations);
+ let distance=base[4];if(base[0]==="Free kick")distance=pick([18,20,22,24,26,28,30])+" yards";
+ return {name:base[0],description:base[1]+" "+variation+".",attack:base[2],defend:base[3],distance};
+}
+function playerChance(p,attribute){
+ let base=p.overall||80;
+ if(game.perk==="Home Advantage"&&match.home)base+=1;
+ if(p.captainBonus&&p.id===game.captain)base+=5;
+ if(p.token===attribute)base+=10;
+ return Math.max(1,Math.min(100,base));
 }
 function nextChance(){
  if(match.remaining<=0){finishMatch();return}
@@ -280,56 +303,48 @@ function nextChance(){
  $("score").textContent=`${match.homeScore} - ${match.awayScore}`;
  $("possession").textContent=match.home?"Home match":"Away match";
  const s=scenario();match.current=s;
- const eligible=game.squad.filter(p=>!p.injured&&!p.glass||!p.injured);
- const attacker=eligible.filter(p=>p.position!=="GK");
- $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}'</div>${s.description}${s.distance?`<br>Free kick distance: ${s.distance} yards.`:""}<br>Choose the player to take the action.`;
- $("chanceControls").innerHTML=`<p>Action: ${s.attack} · Opposing challenge: ${s.defend}</p><label>Choose player <select id="actionPlayer">${attacker.map(p=>`<option value="${p.id}">${p.name} (${p.position}) · ${p.overall}</option>`).join("")}</select></label><button class="primary" onclick="resolveChance()">Take action</button>`;
-}
-function playerChance(p,attribute){
- let base=p.overall||80;
- if(game.perk==="Home Advantage"&&match.home)base+=1;
- if(p.captainBonus&&p.id===game.captain)base+=5;
- if(p.token===attribute)base+=10;
- return Math.max(5,Math.min(100,base));
+ const eligible=match.xi.filter(p=>!p.injured&&p.position!=="GK");
+ $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}'</div>${s.description}<br>Location: ${s.distance}.`;
+ $("chanceControls").innerHTML=`<p>Action: ${s.attack} · Opposition challenge: ${s.defend}</p><label>Choose player <select id="actionPlayer">${eligible.map(p=>`<option value="${p.id}">${p.name} (${p.position}) · ${p.overall??"Legend"}</option>`).join("")}</select></label><button class="primary" onclick="resolveChance()">Take action</button>`;
 }
 function resolveChance(){
- const p=game.squad.find(x=>x.id===$("actionPlayer").value);
- if(!p)return;
+ const p=game.squad.find(x=>x.id===$("actionPlayer").value);if(!p)return;
  const s=match.current,att=playerChance(p,s.attack);
  const defender=pick(match.opponent.squad||makeAISquad());
  let def=(defender.overall||50)+(defender.token===s.defend?10:0);
  if(p.token==="Dribbling"&&s.defend==="Tackling")def-=10;
- const chance=Math.max(5,Math.min(100,att-Math.max(0,def-50)));
- const roll=rand(100)+1,success=roll<=chance;
- let text=`${p.name} attempts the ${s.name.toLowerCase()}. Success chance: ${chance}%. Roll: ${roll}. `;
+ const chance=Math.max(1,Math.min(100,att-Math.max(0,def-50)));
+ const roll=1+rand(100);
+ // A result higher than 100 minus the displayed percentage succeeds.
+ const success=roll>(100-chance);
+ let text=`${p.name} attempts the ${s.name.toLowerCase()}. Success chance: ${chance}%. d100 roll: ${roll}. `;
  if(success){
-  const goalRoll=rand(100)+1,finishChance=playerChance(p,"Shooting");
-  if(goalRoll<=finishChance){
+  const goalChance=playerChance(p,"Shooting"),goalRoll=1+rand(100);
+  if(goalRoll>(100-goalChance)){
    if(match.home)match.homeScore++;else match.awayScore++;
-   p.goals++;p.appearances++;
-   text+=`<br><strong>GOOOOOAL! ${p.name} finds the net! ${match.homeScore}-${match.awayScore}.</strong>`;
-   match.goalScorer=p.id;
-   if(Math.random()<.65){const assister=pick(game.squad.filter(x=>x.id!==p.id&&x.position!=="GK"));if(assister){assister.assists++;text+=` ${assister.name} gets the assist!`;}}
-  }else text+="The chance is created, but the shot goes wide!";
- }else text+="The move breaks down and possession is lost.";
- if(Math.random()<.001){p.glass=true;text+=`<br>${p.name}'s card becomes a shimmering glass card after the match!`;}
- p.appearances++;
+   p.goals++;text+=`<br><strong>GOOOOOAL! ${p.name} smashes it into the net! ${match.homeScore}-${match.awayScore}!</strong>`;
+   const helpers=match.xi.filter(x=>x.id!==p.id&&x.position!=="GK");
+   if(helpers.length&&Math.random()<.65){const assister=pick(helpers);assister.assists++;text+=` ${assister.name with the assist!`;}
+  }else text+="The move creates a shooting opportunity, but the effort goes wide!";
+ }else{
+  text+="The opponent wins the duel and clears the ball away.";
+ }
  match.events.push(text);
  $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}'</div>${text}`;
  match.remaining--;
  $("score").textContent=`${match.homeScore} - ${match.awayScore}`;
  $("chanceControls").innerHTML=`<button class="primary" onclick="nextChance()">Continue match</button>`;
 }
-function finishMatchEarly(){match.remaining=0;finishMatch()}
 function finishMatch(){
  if(match.finished)return;match.finished=true;
- const homeScore=match.homeScore,awayScore=match.awayScore;
- const userScore=homeScore,oppScore=awayScore;
+ const userScore=match.homeScore,oppScore=match.awayScore;
  if(match.type==="league"){
   const f=match.fixture;f.played=true;f.score=`${userScore}-${oppScore}`;
   const me=game.table[0],op=game.table.find(x=>x.name===match.opponent.name);
   me.gf+=userScore;me.ga+=oppScore;op.gf+=oppScore;op.ga+=userScore;
   if(userScore>oppScore){me.w++;me.points+=3;op.l++}else if(userScore<oppScore){me.l++;op.w++;op.points+=3}else{me.d++;op.d++;me.points++;op.points++}
+  // Every other fixture in this round is simulated before rewards are offered.
+  simulateOtherFixtures(game.fixtureIndex);
   game.results.push(f.score);game.fixtureIndex++;
   if(game.fixtureIndex===30){endSeason();return}
   game.trainingDone=false;game.secondTraining=false;
@@ -337,24 +352,40 @@ function finishMatch(){
  }else{
   const won=userScore>oppScore;
   game.cup.history.push(`${match.opponent.name}: ${userScore}-${oppScore} — ${won?"Football For Life win":"Football For Life eliminated"}`);
-  if(!won){game.cup.eliminated=true;show("table");renderTable();return}
+  if(!won){game.cup.eliminated=true;$("matchScreen").classList.add("hidden");$("nav").classList.remove("hidden");show("table");return}
   cupVictory();
  }
  $("nav").classList.remove("hidden");
 }
+function simulateOtherFixtures(roundIndex){
+ const playedOpp=game.fixtures[roundIndex].op;
+ const roundOpponents=clubs.slice(1).filter(n=>n!==playedOpp);
+ roundOpponents.forEach(name=>{
+  const other=game.teams.find(t=>t.name===name);
+  const home=rand(2)===0;
+  const a=makeAISquad(),b=makeAISquad();
+  const powerA=a.reduce((s,p)=>s+p.overall,0),powerB=b.reduce((s,p)=>s+p.overall,0);
+  const rollA=rand(10)+1+(powerA>=powerB?rand(10)+1:0);
+  const rollB=rand(10)+1+(powerB>powerA?rand(10)+1:0);
+  const scoreA=Math.max(0,Math.floor(rollA/5)+rand(2)),scoreB=Math.max(0,Math.floor(rollB/5)+rand(2));
+  const opponent=game.teams.find(t=>t.name!==name&&t.name!==playedOpp);
+  if(!opponent)return;
+  other.gf+=scoreA;other.ga+=scoreB;opponent.gf+=scoreB;opponent.ga+=scoreA;
+  if(scoreA>scoreB){other.w++;other.points+=3;opponent.l++}else if(scoreA<scoreB){other.l++;opponent.w++;opponent.points+=3}else{other.d++;opponent.d++;other.points++;opponent.points++}
+ });
+}
 function showReward(title,count,done){
- $("matchScreen").classList.add("hidden");$("rewardScreen").classList.remove("hidden");
- $("nav").classList.add("hidden");$("rewardTitle").textContent=title;
- const choices=Array.from({length:count},()=>rollReward());
- $("rewardChoices").innerHTML=choices.map((p,i)=>cardHTML(p,`<button onclick="chooseReward(${i})">Choose this card</button>`)).join("");
- window.rewardChoices=choices;window.rewardDone=done;
+ $("matchScreen").classList.add("hidden");$("rewardScreen").classList.remove("hidden");$("nav").classList.add("hidden");
+ $("rewardTitle").textContent=title;window.rewardChoices=Array.from({length:count},()=>rollReward());window.rewardDone=done;
+ $("rewardChoices").innerHTML=window.rewardChoices.map((p,i)=>cardHTML(p,`<button onclick="chooseReward(${i})">Choose this card</button>`)).join("");
+ $("rewardExtra").innerHTML="";
 }
 function rollReward(){
  let odds=[55,25,13,6,1];
- if(game.perk==="Lucky Scout"&&game.fixtureIndex<=3)odds=[10,50,26,12,2];
- let r=rand(100),rarity=r<odds[0]?"Grey":r<odds[0]+odds[1]?"Green":r<93?"Blue":r<99?"Purple":"Gold";
- const pos=pick(["GK","CB","LB","RB","CM","CDM","CAM","LW","RW","ST"]);
- return randomPlayer(pos,rarity);
+ if(game.perk==="Lucky Scout"&&game.fixtureIndex<3)odds=[10,50,26,12,2];
+ const r=rand(100),sum=odds.reduce((a,b)=>a+b,0);
+ let rarity=r<odds[0]?"Grey":r<odds[0]+odds[1]?"Green":r<93?"Blue":r<99?"Purple":"Gold";
+ return randomPlayer(pick(["GK","CB","LB","RB","CM","CDM","CAM","LW","RW","ST"]),rarity);
 }
 function chooseReward(i){
  const p=window.rewardChoices[i];
@@ -365,74 +396,28 @@ function chooseReward(i){
   game.squad[n]=p;
  }
  combineDuplicates();
- $("rewardChoices").innerHTML="";
- $("rewardExtra").innerHTML="<p>Reward added to your squad. Duplicate cards have been combined where possible.</p><button class='primary' onclick='completeReward()'>Continue</button>";
+ $("rewardChoices").innerHTML="";$("rewardExtra").innerHTML="<p>Reward added. Matching cards have been combined where possible.</p><button class='primary' onclick='completeReward()'>Continue</button>";
 }
-function completeReward(){ $("rewardScreen").classList.add("hidden");$("nav").classList.remove("hidden");if(window.rewardDone)window.rewardDone(); }
+function completeReward(){$("rewardScreen").classList.add("hidden");$("nav").classList.remove("hidden");if(window.rewardDone)window.rewardDone()}
 function combineDuplicates(){
  for(let i=0;i<game.squad.length;i++){
-  let a=game.squad[i];if(a.legend)continue;
-  let j=game.squad.findIndex((b,k)=>k!==i&&!b.legend&&b.name===a.name&&b.rarity===a.rarity&&b.position===a.position);
+  const a=game.squad[i];if(a.legend)continue;
+  const j=game.squad.findIndex((b,k)=>k!==i&&!b.legend&&b.name===a.name&&b.rarity===a.rarity&&b.position===a.position);
   if(j<0)continue;
   if(a.rarity==="Gold"){game.squad.splice(j,1);i--;continue}
-  const next=rarities[rarities.indexOf(a.rarity)+1];
-  a.rarity=next;a.overall=Math.min(100,overall[next]+1);
-  game.squad.splice(j,1);i--;
+  const next=rarities[rarities.indexOf(a.rarity)+1];a.rarity=next;a.overall=Math.min(100,overall[next]+1);game.squad.splice(j,1);i--;
  }
-}
-function playNextCup(){
- const due=[8,16,24,30].includes(game.fixtureIndex);
- if(!due){alert("Cup rounds take place after league fixtures 8, 16, 24 and 30.");return}
- const round=game.cup.round;
- if(game.cup.eliminated||game.cup.champion){alert("Your cup run has ended.");return}
- const current=game.cup.rounds[round]||[];
- const pairing=current.find(x=>x.includes("Football For Life"));
- if(!pairing){alert("Cup draw is being prepared.");return}
- const oppName=pairing.find(x=>x!=="Football For Life");
- const opp=game.teams.find(t=>t.name===oppName)||{name:oppName,squad:makeAISquad()};
- beginMatch({type:"cup",opponent:opp,home:true});
-}
-function cupVictory(){
- const round=game.cup.round;
- const nextNames=clubs.slice().filter(x=>x!=="Football For Life").sort(()=>Math.random()-.5);
- if(round===3){game.cup.champion="Football For Life";game.achievements.push("Cup Champion")}
- else{
-  game.cup.round++;
-  const size=8>>game.cup.round;
-  const next=[];for(let i=0;i<size*2;i+=2)next.push([nextNames[i],nextNames[i+1]]);
-  next.push(["Football For Life",nextNames[0]]);
-  game.cup.rounds[game.cup.round]=next;
- }
- const token=pick(tokens);game.tokensEarned.push(token);
- const legends=game.legendPool||[];
- const legendChoices=legends.filter(x=>!game.squad.some(p=>p.legend&&p.name===x.name));
- const legend=legendChoices.length?pick(legendChoices):makePlayer("The Unknown Legend","ST",null,true);
- showReward("Cup Victory — Attribute Token and Legend",1,()=>{
-  $("rewardExtra").innerHTML=`<p>You earned a ${token} token and a legend card choice.</p><button onclick="awardCupToken('${token}')">Choose player for token</button>`;
-  window.pendingLegend=legend;
- });
-}
-function awardCupToken(token){
- const eligible=game.squad.filter(p=>!p.legend||!p.token);
- const target=pick(eligible);
- target.token=token;
- if(window.pendingLegend&&game.squad.length<18)game.squad.push(window.pendingLegend);
- else if(window.pendingLegend)game.squad[0]=window.pendingLegend;
- $("rewardScreen").classList.add("hidden");$("nav").classList.remove("hidden");show("fixtures");
 }
 function endSeason(){
- const me=game.table[0];
- if(me.l===0)game.achievements.push("Unbeaten Season");
+ const me=game.table[0];if(me.l===0)game.achievements.push("Unbeaten Season");
  if(game.table.slice().sort((a,b)=>b.points-a.points)[0]===me)game.achievements.push("League Champion");
- const top=game.squad.slice().sort((a,b)=>b.goals-a.goals)[0];
- if(top&&top.goals>0)game.achievements.push("Golden Boot");
+ const top=game.squad.slice().sort((a,b)=>b.goals-a.goals)[0];if(top&&top.goals>0)game.achievements.push("Golden Boot");
  $("nav").classList.add("hidden");$("endScreen").classList.remove("hidden");
  $("keepChoices").innerHTML=game.squad.map((p,i)=>cardHTML(p,`<button onclick="keepCard(${i})">Keep permanently</button>`)).join("");
  $("collection").innerHTML=`<h3>Previously kept cards: ${saved().length}</h3>`;
 }
 function keepCard(i){
- const collection=saved(),p=game.squad[i];
- if(!p){alert("Card not found.");return}
+ const collection=saved(),p=game.squad[i];if(!p)return;
  collection.push({...p,accountBound:true});save(collection);
  $("keepChoices").innerHTML="<h3>Card saved to this browser's permanent collection.</h3>";
  $("collection").innerHTML=`<h3>Permanent collection (${collection.length})</h3>${collection.map(x=>cardHTML(x)).join("")}`;
