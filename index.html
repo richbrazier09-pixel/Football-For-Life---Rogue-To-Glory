@@ -113,7 +113,7 @@ const perks=[
 const firstNames=["Rich","Jack","Harry","Oliver","Noah","Charlie","Theo","James","Leo","Alfie","Mason","Ethan","Lucas","Finley","Max","Oscar","Freddie","Archie"];
 const lastNames=["Brazier","Smith","Jones","Taylor","Davies","Wilson","Brown","Evans","Thomas","Roberts","Walker","White","Green","Hall","Wood","Clarke"];
 const positions=["GK","CB","CB","LB","RB","CM","CM","CDM","CAM","LW","RW","ST","ST","LM","RM"];
-let game=null,map=null,selectedPerk=0,match=null;
+let game={},map=null,selectedPerk=0,match=null;
 const savedKey="ffl_rogue_glory_collection_v1";
 const saved=()=>JSON.parse(localStorage.getItem(savedKey)||"[]");
 const save=x=>localStorage.setItem(savedKey,JSON.stringify(x));
