@@ -43,6 +43,8 @@ td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 #commentary{background:#0c131c;border:1px solid var(--line);border-radius:10px;padding:14px;min-height:130px;line-height:1.6}
 .highlight{font-size:18px;color:var(--gold);font-weight:bold}
 .errorbox{background:#632f35;border:1px solid #ff8d8d;padding:12px;border-radius:8px;margin:12px 0}
+.substitution-box{background:#172331;border:1px solid #53657a;border-radius:9px;padding:12px;margin-top:12px}
+.chance-display{color:var(--gold);font-weight:bold;margin:10px 0}
 @media(max-width:600px){main{padding:7px}#map{height:380px}table{font-size:12px}.pitchplayer{min-width:75px;padding:5px}}
 </style>
 </head>
@@ -126,6 +128,7 @@ td,th{padding:8px;border-bottom:1px solid var(--line);text-align:left}
 </div>
 <div id="commentary"></div>
 <div id="chanceControls" class="panel"></div>
+<div id="substitutionControls" class="substitution-box"></div>
 </div>
 </section>
 
@@ -387,10 +390,11 @@ function beginMatch(details){
  const oppChances=Math.max(5,Math.min(10,6-Math.round(diff/100)));
  const schedule=[...Array(userChances).fill("user"),...Array(oppChances).fill("opponent")];
  for(let i=schedule.length-1;i>0;i--){const j=randomInt(i+1);[schedule[i],schedule[j]]=[schedule[j],schedule[i]];}
- match={...details,opponent,starters,minute:1,userGoals:0,opponentGoals:0,schedule,eventIndex:0,finished:false,appearanceIds:new Set(starters.map(p=>p.id))};
+ match={...details,opponent,starters:starters.slice(),minute:1,userGoals:0,opponentGoals:0,schedule,eventIndex:0,finished:false,appearanceIds:new Set(starters.map(p=>p.id)),substitutions:0,maxSubstitutions:5,current:null};
  match.appearanceIds.forEach(id=>{const p=game.squad.find(x=>x.id===id);if(p)p.appearances++;});
  $("matchTitle").textContent=`Football For Life vs ${opponent.name}`;
  $("matchScreen").classList.remove("hidden");document.querySelectorAll("main>section:not(#matchScreen)").forEach(s=>s.classList.add("hidden"));$("nav").classList.add("hidden");
+ renderSubstitutionControls();
  nextChance();
 }
 const scenarios=[
@@ -410,19 +414,84 @@ function chooseOutfield(side){
  const squad=sideSquad(side).filter(p=>p.position!=="GK"&&!p.injured);return pick(squad.length?squad:sideSquad(side));
 }
 function chooseKeeper(side){return sideSquad(side).find(p=>p.position==="GK")||pick(sideSquad(side));}
-function rating(p,attribute,side){
- let value=p.overall||80;
- if(p.token===attribute)value+=10;
- if(side==="user"&&p.captainBonus&&p.id===game.captain)value+=5;
+
+/* Rating is based on the actual player's overall rating.
+   A token, captain perk or home advantage can add a bonus.
+   No hidden dice or goalkeeper roll changes the scoring probability. */
+function rating(player,attribute,side){
+ if(!player)return 1;
+ let value=Number(player.overall??50);
+ if(player.token===attribute)value+=10;
+ if(side==="user"&&player.captainBonus&&player.id===game.captain)value+=5;
  if(side==="user"&&game.perk==="Home Advantage"&&match.home)value+=1;
  return Math.max(1,Math.min(100,value));
 }
-
-/* A direct percentage check: an 80-rated shooter has an 80% chance.
-   No dice are displayed. The goalkeeper does not reverse the shooter's rating. */
-function scoringCheck(player,attribute,side){
- const effectiveRating=rating(player,attribute,side);
+function scoringCheck(player,side){
+ const effectiveRating=rating(player,"Shooting",side);
  return {chance:effectiveRating,scored:chance(effectiveRating)};
+}
+function getUserAttacker(){
+ const select=$("actionPlayer");
+ const id=select?.value;
+ return match.starters.find(p=>p.id===id&&p.position!=="GK"&&!p.injured)||match.current?.attacker;
+}
+function selectedScoringChance(){
+ const attacker=getUserAttacker();
+ if(!attacker)return 0;
+ return rating(attacker,"Shooting","user");
+}
+function updateScoringPreview(){
+ const preview=$("scoringPreview");
+ if(!preview)return;
+ const attacker=getUserAttacker();
+ if(!attacker){preview.textContent="No eligible attacker selected.";return;}
+ const value=selectedScoringChance();
+ preview.textContent=`${attacker.name} · ${attacker.overall??50} OVR · ${value}% scoring chance`;
+}
+function renderSubstitutionControls(){
+ const box=$("substitutionControls");
+ if(!box||!match)return;
+ const bench=game.squad.filter(p=>!match.starters.some(s=>s.id===p.id)&&!p.injured);
+ const active=match.starters;
+ const outOptions=active.map(p=>`<option value="${p.id}">${p.name} (${p.position}) · ${p.overall??"Legend"} OVR</option>`).join("");
+ const inOptions=bench.map(p=>`<option value="${p.id}">${p.name} (${p.position}) · ${p.overall??"Legend"} OVR</option>`).join("");
+ box.innerHTML=`<h3>Substitutions</h3>
+ <p class="small">Used: ${match.substitutions}/${match.maxSubstitutions}. Choose a player on the pitch and a substitute from the bench.</p>
+ ${match.substitutions<match.maxSubstitutions&&bench.length?`
+ <label>Player coming off <select id="subOut">${outOptions}</select></label>
+ <label>Substitute coming on <select id="subIn">${inOptions}</select></label>
+ <button onclick="makeSubstitution()">Make substitution</button>`:
+ `<p class="small">${bench.length?"No substitutions remaining.":"No eligible substitutes available."}</p>`}
+ <div class="small"><b>Currently on pitch:</b> ${active.map(p=>`${p.name} (${p.overall??"Legend"})`).join(" · ")}</div>`;
+}
+function makeSubstitution(){
+ if(!match||match.finished)return;
+ if(match.substitutions>=match.maxSubstitutions){alert("You have used all your substitutions.");return;}
+ const outId=$("subOut")?.value,inId=$("subIn")?.value;
+ const outIndex=match.starters.findIndex(p=>p.id===outId);
+ const incoming=game.squad.find(p=>p.id===inId);
+ if(outIndex<0||!incoming){alert("Choose a player on the pitch and a substitute.");return;}
+ const outgoing=match.starters[outIndex];
+ if((outgoing.position==="GK")!==(incoming.position==="GK")){
+  alert("A goalkeeper can only be replaced by another goalkeeper.");
+  return;
+ }
+ if(match.starters.some(p=>p.id===incoming.id)){alert("That player is already on the pitch.");return;}
+ match.starters[outIndex]=incoming;
+ match.substitutions++;
+ if(!match.appearanceIds.has(incoming.id)){
+  match.appearanceIds.add(incoming.id);
+  incoming.appearances++;
+ }
+ if(match.current?.side==="user"&&$("actionPlayer")){
+  $("actionPlayer").value=incoming.position==="GK"?getFirstOutfieldId():incoming.id;
+  updateScoringPreview();
+ }
+ renderSubstitutionControls();
+ $("commentary").innerHTML+=`<p><b>Substitution:</b> ${incoming.name} (${incoming.overall??"Legend"} OVR) replaces ${outgoing.name}.</p>`;
+}
+function getFirstOutfieldId(){
+ return match.starters.find(p=>p.position!=="GK"&&!p.injured)?.id||"";
 }
 function nextChance(){
  if(match.eventIndex>=match.schedule.length){finishMatch();return;}
@@ -436,19 +505,26 @@ function nextChance(){
  const team=side==="user"?"Football For Life":match.opponent.name;
  $("commentary").innerHTML=`<div class="highlight">${match.minute}' — ${team}</div>${situation.description}<p>${attacker.name} is involved in the move.</p>`;
  if(side==="user"){
-  $("chanceControls").innerHTML=`<p><b>Your attack: ${situation.name}</b></p><label>Choose player <select id="actionPlayer">${match.starters.filter(p=>p.position!=="GK"&&!p.injured).map(p=>`<option value="${p.id}">${p.name} (${p.position}) · ${p.overall??"Legend"} OVR</option>`).join("")}</select></label><button class="primary" onclick="resolveChance()">Resolve attack</button>`;
+  const eligible=match.starters.filter(p=>p.position!=="GK"&&!p.injured);
+  const defaultId=attacker.position!=="GK"?attacker.id:eligible[0]?.id;
+  $("chanceControls").innerHTML=`<p><b>Your attack: ${situation.name}</b></p>
+  <label>Choose player <select id="actionPlayer" onchange="updateScoringPreview()">${eligible.map(p=>`<option value="${p.id}" ${p.id===defaultId?"selected":""}>${p.name} (${p.position}) · ${p.overall??"Legend"} OVR</option>`).join("")}</select></label>
+  <div id="scoringPreview" class="chance-display"></div>
+  <button class="primary" onclick="resolveChance()">Resolve attack</button>`;
+  updateScoringPreview();
  }else{
   $("chanceControls").innerHTML=`<p>${match.opponent.name} are building an attack.</p><button class="primary" onclick="resolveChance()">Watch opposition attack</button>`;
  }
+ renderSubstitutionControls();
 }
 function resolveChance(){
  const event=match.current;if(!event)return;
  const side=event.side,userAttack=side==="user";
- const attacker=userAttack?game.squad.find(p=>p.id===$("actionPlayer").value):event.attacker;
+ const attacker=userAttack?getUserAttacker():event.attacker;
  if(!attacker)return;
  const s=event.situation;
- let text="",goal=false,saved=false,missed=false,broken=false,scoringAttribute="Shooting";
- let shooter=attacker;
+ let text="",goal=false,missed=false,broken=false,scoringAttribute="Shooting";
+ let shooter=attacker,shotChance=null;
 
  const scoreLine=()=>`Football For Life ${match.userGoals} – ${match.opponentGoals} ${match.opponent.name}`;
  const scoreGoal=()=>{
@@ -456,46 +532,45 @@ function resolveChance(){
   if(userAttack){match.userGoals++;attacker.goals++;}
   else{match.opponentGoals++;attacker.goals++;}
  };
- const attemptShot=(player,attribute)=>{
-  scoringAttribute=attribute;
-  const result=scoringCheck(player,attribute,side);
-  if(result.scored){scoreGoal();return {goal:true,chance:result.chance};}
-  return {goal:false,chance:result.chance};
+ const attemptShot=player=>{
+  const result=scoringCheck(player,side);
+  shotChance=result.chance;
+  if(result.scored){scoreGoal();return true;}
+  return false;
  };
 
  if(s.type==="penalty"){
   text=`${attacker.name} places the ball on the spot. The referee checks that everyone is ready. The whistle goes.`;
-  const result=attemptShot(attacker,"Shooting");
-  if(result.goal)text+=` GOAL! ${attacker.name} sends the penalty into the net.`;
-  else{missed=true;text+=` ${attacker.name} strikes it wide. The goalkeeper prepares for the goal kick.`;}
+  shooter=attacker;
+  if(attemptShot(shooter))text+=` GOAL! ${shooter.name} sends the penalty into the net.`;
+  else{missed=true;text+=` ${shooter.name} strikes it wide. The goalkeeper prepares for the goal kick.`;}
  }
  else if(["corner","cross","header"].includes(s.type)){
   text=s.type==="corner"?"The corner is delivered into the six-yard area.":s.type==="cross"?"The winger gets to the byline and whips a cross towards the penalty spot.":"A high ball is floated towards the forward.";
   if(!chance(rating(attacker,s.attribute,side))){missed=true;text+=" The delivery is overhit and drifts beyond everyone. The defence clears.";}
   else{
-   shooter=chooseOutfield(side);
+   shooter=userAttack?chooseOutfield("user"):chooseOutfield("opponent");
    text+=` ${shooter.name} rises to meet it.`;
-   const result=attemptShot(shooter,"Heading");
-   if(result.goal)text+=` GOAL! ${shooter.name} powers a header into the net!`;
+   if(attemptShot(shooter))text+=` GOAL! ${shooter.name} powers a header into the net!`;
    else{missed=true;text+=` The header flies over the crossbar.`;}
   }
  }
  else if(s.type==="freekick"){
   text=`${attacker.name} stands over the free kick and curls a shot towards goal.`;
-  const result=attemptShot(attacker,"Set Pieces");
-  if(result.goal)text+=` GOAL! A superb free kick from ${attacker.name}!`;
+  shooter=attacker;
+  if(attemptShot(shooter))text+=` GOAL! A superb free kick from ${shooter.name}!`;
   else{missed=true;text+=" The effort bends wide of the post.";}
  }
  else if(s.type==="longshot"){
   text=`${attacker.name} finds space outside the area and strikes from distance.`;
-  const result=attemptShot(attacker,"Shooting");
-  if(result.goal)text+=` GOAL! A brilliant long-range strike from ${attacker.name}!`;
+  shooter=attacker;
+  if(attemptShot(shooter))text+=` GOAL! A brilliant long-range strike from ${shooter.name}!`;
   else{missed=true;text+=" The shot whistles past the post.";}
  }
  else if(s.type==="oneonone"){
   text=`${attacker.name} breaks through the defensive line and races towards goal.`;
-  const result=attemptShot(attacker,"Shooting");
-  if(result.goal)text+=` GOAL! ${attacker.name} keeps their composure and slots it home!`;
+  shooter=attacker;
+  if(attemptShot(shooter))text+=` GOAL! ${shooter.name} keeps their composure and slots it home!`;
   else{missed=true;text+=` The finish goes wide. The goalkeeper can breathe again.`;}
  }
  else{
@@ -505,8 +580,8 @@ function resolveChance(){
    broken=true;text+=` ${event.defender.name} reads the move and wins possession.`;
   }else{
    text+=` ${attacker.name} creates a shooting opportunity.`;
-   const result=attemptShot(attacker,"Shooting");
-   if(result.goal)text+=` GOAL! ${attacker.name} finishes the move with a composed strike!`;
+   shooter=attacker;
+   if(attemptShot(shooter))text+=` GOAL! ${shooter.name} finishes the move with a composed strike!`;
    else{missed=true;text+=" The shot flashes wide of the goal.";}
   }
  }
@@ -514,12 +589,13 @@ function resolveChance(){
  if(goal)text+=`<br><strong>${scoreLine()}</strong>`;
  else text+=`<br>${scoreLine()}`;
 
- const outcome=goal?"GOAL":saved?"SAVED":missed?"MISSED":broken?"ATTACK BROKEN DOWN":"CHANCE";
- const chanceText=goal||missed?`<p class="small">${shooter.name}: ${scoringAttribute} rating ${rating(shooter,scoringAttribute,side)} — ${rating(shooter,scoringAttribute,side)}% scoring probability for that shot.</p>`:"";
+ const outcome=goal?"GOAL":missed?"MISSED":broken?"ATTACK BROKEN DOWN":"CHANCE";
+ const chanceText=shotChance!==null?`<p class="small">${shooter.name}: ${shooter.overall??50} OVR — ${shotChance}% scoring probability for that shot.</p>`:"";
  $("commentary").innerHTML=`<div class="highlight">${s.name} — ${match.minute}' · ${outcome}</div>${text}${chanceText}`;
  $("score").textContent=`${match.userGoals} - ${match.opponentGoals}`;
  match.eventIndex++;
  $("chanceControls").innerHTML='<button class="primary" onclick="nextChance()">Continue match</button>';
+ renderSubstitutionControls();
 }
 
 /* LEAGUE TABLE AND BACKGROUND RESULTS */
@@ -557,7 +633,7 @@ function finishMatch(){
   game.trainingDone=false;game.secondTraining=false;
   if(game.perk==="Captain My Captain"&&game.fixtureIndex===1){
    const captain=game.squad.find(p=>p.id===game.captain);
-   if(captain){const extra={...captain,id:"bonus_"+Math.random().toString(36).slice(2),rarity:"Grey",overall:50,token:null,captainBonus:false,goals:0,assists:0,appearances:0};game.squad.push(extra);combineDuplicates();}
+   if(captain){const extra={...captain,id:"bonus_"+Math.random().toString(36).slice(2),rarity:"Grey",overall:50,token:null,captainBonus:false,goals:0,assists:0,appearances:0,training:0};game.squad.push(extra);combineDuplicates();}
   }
   showReward("League Match Reward",3,()=>{renderAll();showScreen("fixtures");});
  }else{
@@ -587,7 +663,9 @@ function chooseReward(index){
  else{
   const answer=prompt("Squad full. Enter the number of the card to replace:\n"+game.squad.map((p,i)=>`${i+1}. ${p.name} (${p.rarity})`).join("\n"));
   const slot=Number(answer)-1;if(!Number.isInteger(slot)||slot<0||slot>=game.squad.length){alert("Invalid selection. Reward not added.");return;}
+  const removed=game.squad[slot];
   game.squad[slot]=card;
+  if(game.lineup?.includes(removed.id))game.lineup=game.lineup.map(id=>id===removed.id?card.id:id);
  }
  combineDuplicates();game.rewardCount++;
  $("rewardChoices").innerHTML="";$("rewardExtra").innerHTML='<p>Reward added. Matching cards combined where possible.</p><button class="primary" onclick="completeReward()">Continue</button>';
@@ -606,7 +684,9 @@ function combineDuplicates(){
    if(j<0)continue;
    const b=game.squad[j],next=rarities[rarities.indexOf(a.rarity)+1];
    a.rarity=next;a.overall=Math.min(100,overall[next]+1);if(b.token&&!a.token)a.token=b.token;
-   game.squad.splice(j,1);changed=true;break;
+   game.squad.splice(j,1);
+   if(game.lineup?.includes(b.id))game.lineup=game.lineup.map(id=>id===b.id?a.id:id);
+   changed=true;break;
   }
  }
 }
@@ -619,7 +699,7 @@ function playNextCup(){
  const pair=game.cup.rounds[game.cup.round]?.find(p=>p.includes("Football For Life"));
  if(!pair){alert("Cup fixture unavailable.");return;}
  const name=pair.find(n=>n!=="Football For Life"),opponent=game.teams.find(t=>t.name===name)||{name,squad:makeAISquad()};
- beginMatch({type:"cup",opponent,home:true,op:name});
+ beginMatch({type:"cup",opponent,home:true,opponentName:name});
 }
 function cupVictory(){
  const token=pick(tokens),eligible=game.squad.filter(p=>!p.token);
